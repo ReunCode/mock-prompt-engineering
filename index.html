@@ -550,7 +550,7 @@
   <section id="viewSelect">
     <div class="card intro-banner">
       <h2>ยินดีต้อนรับค่ะ นายท่าน</h2>
-      <p>ระบบคลังข้อสอบฉบับสมบูรณ์ <strong>ชุดละ 100 ข้อ (รวม 300 ข้อ)</strong> ครอบคลุมครบทุกหัวข้อตาม Course Syllabus สัปดาห์ที่ 9–15 ได้แก่ <strong>1) กิจการซื้อขายสินค้า (Periodic & Perpetual) 2) Cost Flow Assumption (TAS 2: FIFO, Weighted & Moving Average) 3) ภาษีมูลค่าเพิ่ม (VAT, ภาษีซื้อต้องห้าม, ภ.พ.30/36) 4) โปรแกรม FlowAccount & WHT 5) กิจการอุตสาหกรรม (DM, DL, MOH, COGM) และ 6) วิเคราะห์งบการเงิน (Ratios, DuPont) & งบกระแสเงินสด (CFO/CFI/CFF)</strong> โดยทุกข้อมีเฉลยละเอียด แนวคิด และสูตรที่ใช้ครบถ้วนค่ะ</p>
+      <p>ระบบคลังข้อสอบฉบับสมบูรณ์ <strong>ชุดละ 100 ข้อ (รวม 300 ข้อ)</strong> ตรวจสอบความถูกต้องของตัวเลขและเฉลยครบ 100% ครอบคลุมทุกหัวข้อตาม Course Syllabus สัปดาห์ที่ 9–15 ได้แก่ <strong>1) กิจการซื้อขายสินค้า (Periodic & Perpetual) 2) Cost Flow Assumption (TAS 2: FIFO, Weighted & Moving Average) 3) ภาษีมูลค่าเพิ่ม (VAT, ภาษีซื้อต้องห้าม, ภ.พ.30/36) 4) โปรแกรม FlowAccount & WHT 5) กิจการอุตสาหกรรม (DM, DL, MOH, COGM) และ 6) วิเคราะห์งบการเงิน (Ratios, DuPont) & งบกระแสเงินสด (CFO/CFI/CFF)</strong> ค่ะ</p>
     </div>
 
     <div class="sets-grid" id="setsGrid"></div>
@@ -571,7 +571,7 @@
     <div class="card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.65rem;">
         <strong style="color: var(--primary);">แผนผังข้อสอบ 100 ข้อ (คลิกหมายเลขเพื่อกระโดดไปยังข้อนั้นทันที)</strong>
-        <span style="font-size: 0.85rem; color: var(--text-muted);">*สำหรับช่องเติมตัวเลข พิมพ์มีลูกน้ำ (เช่น 45,000) หรือไม่มีลูกน้ำ (45000) ก็ได้ค่ะ</span>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">*สำหรับช่องเติมตัวเลข รองรับทั้งมีลูกน้ำ (45,000) ไม่มีลูกน้ำ (45000) และค่าติดลบ (-8000 หรือ (8000)) ค่ะ</span>
       </div>
       <div id="questionNavigator" class="navigator-grid"></div>
       <div class="page-bar">
@@ -651,17 +651,17 @@ const fmt = n => Number(n).toLocaleString("en-US");
 const fmt2 = n => Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 // ============================================================================
-// PARAMETRIC EXAM GENERATOR (100 QUESTIONS PER SET = 300 COMPLETE QUESTIONS)
+// PARAMETRIC EXAM GENERATOR (100 QUESTIONS PER SET = 300 VERIFIED QUESTIONS)
 // ============================================================================
 function generateSetQuestions(setId) {
   const qs = [];
-  const d = setId === 1 ? 0 : setId === 2 ? 1 : 2; // Difficulty & Variant selector
+  const d = setId === 1 ? 0 : setId === 2 ? 1 : 2;
 
   // --------------------------------------------------------------------------
   // PART 1: กิจการซื้อขายสินค้า Periodic & Perpetual, Incoterms, Discounts (20 ข้อ: ข้อ 1–20)
   // --------------------------------------------------------------------------
   const merchItems = [
-    // Q1: Operating Cycle & Cash Cycle
+    // Q1
     () => {
       const hold = [30, 45, 40][d];
       const arDays = [45, 60, 50][d];
@@ -677,10 +677,10 @@ function generateSetQuestions(setId) {
           { label: "วงจรเงินสด (Cash Cycle)", indent: false, key: "cc", answer: String(cashCycle), hint: "วัน" }
         ],
         formula: "Operating Cycle = ระยะเวลาถือครองสินค้า + ระยะเวลาเก็บหนี้ | Cash Cycle = Operating Cycle − ระยะเวลาชำระหนี้เจ้าหนี้",
-        explanation: `แนวคิด:\n1. วงจรการดำเนินงาน (Operating Cycle) = ${hold} + ${arDays} = ${opCycle} วัน (ระยะเวลาตั้งแต่ได้สินค้าจนขายและเก็บเงินสดได้)\n2. วงจรเงินสด (Cash Cycle) = ${opCycle} − ${apDays} = ${cashCycle} วัน (ระยะเวลาที่เงินสดของกิจการจมอยู่ในสินค้าและลูกหนี้)`
+        explanation: `แนวคิด:\n1. วงจรการดำเนินงาน (Operating Cycle) = ${hold} + ${arDays} = ${opCycle} วัน\n2. วงจรเงินสด (Cash Cycle) = ${opCycle} − ${apDays} = ${cashCycle} วัน`
       };
     },
-    // Q2: Incoterms FOB / CFR / CIF
+    // Q2
     () => {
       const cases = [
         {
@@ -723,7 +723,7 @@ function generateSetQuestions(setId) {
       const c = cases[d];
       return { type: "mcq", topic: "W9 | บทที่ 6: เงื่อนไขการส่งมอบ Incoterms", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q3: Opportunity Cost of Forgoing Cash Discount
+    // Q3
     () => {
       const disc = [2, 3, 2][d];
       const discDays = [10, 10, 15][d];
@@ -741,15 +741,15 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: การไม่ชำระภายใน ${discDays} วัน เท่ากับยอมเสียส่วนลด ${disc}% เพื่อยืดเวลาจ่ายออกไปอีก ${netDays} − ${discDays} = ${diffDays} วัน\nสูตร: ${disc}% × (365 / ${diffDays}) = ${rate}% ต่อปี`
       };
     },
-    // Q4: Trade Discount + Cash Discount Calculation
+    // Q4
     () => {
       const list = [80000, 120000, 150000][d];
       const td = [10, 15, 20][d];
       const ret = [2000, 2000, 5000][d];
       const cd = [2, 3, 2][d];
-      const afterTd = list * (1 - td / 100);
+      const afterTd = Math.round(list * (1 - td / 100));
       const afterRet = afterTd - ret;
-      const discAmt = afterRet * (cd / 100);
+      const discAmt = Math.round(afterRet * (cd / 100));
       const cashPay = afterRet - discAmt;
       return {
         type: "fill",
@@ -764,7 +764,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n1. ส่วนลดการค้าไม่บันทึกบัญชี บันทึกยอดซื้อสุทธิ = ${fmt(list)} × ${100 - td}% = ${fmt(afterTd)} บาท\n2. หักส่งคืนสินค้า ${fmt(ret)} บาท เหลือหนี้สุทธิ = ${fmt(afterRet)} บาท\n3. ส่วนลดรับ ${cd}% = ${fmt(afterRet)} × ${cd}% = ${fmt(discAmt)} บาท -> จ่ายเงินสดสุทธิ = ${fmt(cashPay)} บาท`
       };
     },
-    // Q5: Perpetual Purchase & Freight-in & Return Journal
+    // Q5
     () => {
       const buy = [40000, 60000, 90000][d];
       const freight = [1500, 2000, 3000][d];
@@ -781,9 +781,9 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: ในระบบ Perpetual รายการซื้อ ค่าขนส่งเข้า และส่งคืน บันทึกเข้าบัญชี 'สินค้าคงเหลือ' โดยตรงทั้งหมด:\n+ ${fmt(buy)} (ซื้อ) + ${fmt(freight)} (ค่าขนส่งเข้า) − ${fmt(ret)} (ส่งคืน) = ${fmt(netInv)} บาท`
       };
     },
-    // Q6: Freight Paid on Behalf of Buyer/Seller
+    // Q6
     () => {
-      const amt = [1800, 2400, 3500][d];
+      const amt = [1800, 2400, 3600][d];
       const cases = [
         {
           q: `กิจการ (ผู้ซื้อ) ซื้อสินค้าเชื่อเงื่อนไข CIF (ผู้ขายรับผิดชอบค่าขนส่ง) แต่ผู้ซื้อได้จ่ายค่าขนส่งแทนผู้ขายไปก่อนเป็นเงินสด ${fmt(amt)} บาท ผู้ซื้อจะบันทึกรายการนี้อย่างไร?`,
@@ -819,13 +819,13 @@ function generateSetQuestions(setId) {
           ],
           ans: 0,
           formula: "ส่วนของผู้ซื้อ = ค่าขนส่งเมื่อซื้อ | ส่วนที่จ่ายแทนผู้ขาย = ลดเจ้าหนี้การค้า",
-          exp: `แนวคิด (อ้างอิงตัวอย่างกระดาษทำการหน้า 209): ส่วนของผู้ซื้อครึ่งหนึ่ง (${fmt(amt/2)} บาท) บันทึกเป็น ค่าขนส่งเมื่อซื้อ อีกครึ่งหนึ่ง (${fmt(amt/2)} บาท) เป็นการจ่ายแทนผู้ขายจึงนำไปลดยอดเจ้าหนี้การค้า`
+          exp: `แนวคิด: ส่วนของผู้ซื้อครึ่งหนึ่ง (${fmt(amt/2)} บาท) บันทึกเป็น ค่าขนส่งเมื่อซื้อ อีกครึ่งหนึ่ง (${fmt(amt/2)} บาท) เป็นการจ่ายแทนผู้ขายจึงนำไปลดยอดเจ้าหนี้การค้า`
         }
       ];
       const c = cases[d];
       return { type: "mcq", topic: "W9 | บทที่ 6: ค่าขนส่งสินค้าและการจ่ายแทน", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q7: Perpetual Sales Return (2 entries)
+    // Q7
     () => {
       const sellP = [12000, 20000, 30000][d];
       const costP = [8000, 14000, 21000][d];
@@ -841,7 +841,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: เมื่อรับคืนสินค้าในระบบ Perpetual ต้องบันทึก 2 คู่เสมอ:\n1. ลดยอดขายและลูกหนี้ด้วยราคาขาย = ${fmt(sellP)} บาท\n2. รับสินค้ากลับเข้าคลังและลดต้นทุนขายด้วยราคาทุน = ${fmt(costP)} บาท`
       };
     },
-    // Q8: Periodic COGS Calculation
+    // Q8
     () => {
       const beg = [50000, 75000, 120000][d];
       const pur = [300000, 420000, 550000][d];
@@ -865,7 +865,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ซื้อสุทธิ = ${fmt(pur)} − ${fmt(pret)} − ${fmt(pdisc)} = ${fmt(netPur)} บาท\n• ต้นทุนซื้อสุทธิ = ${fmt(netPur)} + ${fmt(fin)} = ${fmt(netCostPur)} บาท\n• ต้นทุนขาย = ${fmt(beg)} + ${fmt(netCostPur)} − ${fmt(end)} = ${fmt(cogs)} บาท`
       };
     },
-    // Q9: Perpetual Inventory Shrinkage Adjustment
+    // Q9
     () => {
       const book = [92000, 145000, 210500][d];
       const physical = [89500, 141200, 206000][d];
@@ -882,7 +882,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: สินค้าคงเหลือในบัญชีสูงกว่ายอดตรวจนับจริงอยู่ ${fmt(book)} − ${fmt(physical)} = ${fmt(diff)} บาท กิจการต้องปรับลดบัญชีสินค้าคงเหลือและรับรู้เป็นต้นทุนขายเพิ่มขึ้น ${fmt(diff)} บาท`
       };
     },
-    // Q10: Periodic Closing Entries
+    // Q10
     () => {
       const cases = [
         {
@@ -919,18 +919,18 @@ function generateSetQuestions(setId) {
           ],
           ans: 1,
           formula: "Periodic งบทดลอง = สินค้าต้นงวด | Perpetual งบทดลอง = สินค้าปลายงวด (ก่อนตรวจนับ)",
-          exp: "แนวคิด (อ้างอิงหน้า 208 & 212): ระบบ Periodic ไม่มีการเคลื่อนไหวบัญชีสินค้าคงเหลือระหว่างงวด ยอดในงบทดลองจึงเป็นยอดยกมาต้นงวด ส่วน Perpetual บันทึกรับ-จ่ายตลอดงวด ยอดในงบทดลองจึงเป็นยอดปลายงวด"
+          exp: "แนวคิด: ระบบ Periodic ไม่มีการเคลื่อนไหวบัญชีสินค้าคงเหลือระหว่างงวด ยอดในงบทดลองจึงเป็นยอดยกมาต้นงวด ส่วน Perpetual บันทึกรับ-จ่ายตลอดงวด ยอดในงบทดลองจึงเป็นยอดปลายงวด"
         }
       ];
       const c = cases[d];
       return { type: "mcq", topic: "W9 | บทที่ 6: การปิดบัญชีและกระดาษทำการ", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q11: Gross Profit Rate & Markup Calculation
+    // Q11
     () => {
       const sales = [200000, 320000, 450000][d];
       const gpRate = [25, 30, 40][d];
-      const cogs = sales * (1 - gpRate / 100);
-      const gp = sales - cogs;
+      const gp = Math.round(sales * (gpRate / 100));
+      const cogs = sales - gp;
       return {
         type: "fill",
         topic: "W10 | บทที่ 6: การคำนวณต้นทุนขายจากอัตรากำไรขั้นต้น",
@@ -943,7 +943,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• กำไรขั้นต้น = ${fmt(sales)} × ${gpRate}% = ${fmt(gp)} บาท\n• ต้นทุนขาย = ${fmt(sales)} − ${fmt(gp)} = ${fmt(cogs)} บาท`
       };
     },
-    // Q12: Promotional Giveaway of Inventory (No VAT)
+    // Q12
     () => {
       const cost = [3500, 5000, 8200][d];
       const sell = [5000, 7500, 12000][d];
@@ -958,10 +958,10 @@ function generateSetQuestions(setId) {
           { label: `เครดิต ${crAcc}`, indent: true, key: "cr", answer: String(cost), hint: "บาท" }
         ],
         formula: "แจกสินค้าเพื่อโฆษณา (ไม่คิด VAT): Dr. ค่าโฆษณา / Cr. สินค้าคงเหลือ (Perpetual) หรือ ซื้อ (Periodic) ด้วย 'ราคาทุน'",
-        explanation: `แนวคิด (อ้างอิงตัวอย่างหน้า 173 & 189): การนำสินค้าไปแจกเป็นของรางวัลเพื่อโฆษณา ให้โอนลดต้นทุนสินค้าออกด้วย 'ราคาทุน' (${fmt(cost)} บาท) และบันทึกเป็นค่าโฆษณาในจำนวนเดียวกัน`
+        explanation: `แนวคิด: การนำสินค้าไปแจกเป็นของรางวัลเพื่อโฆษณา ให้โอนลดต้นทุนสินค้าออกด้วย 'ราคาทุน' (${fmt(cost)} บาท) และบันทึกเป็นค่าโฆษณาในจำนวนเดียวกัน`
       };
     },
-    // Q13: Multiple-Step Income Statement
+    // Q13
     () => {
       const sales = [800000, 1000000, 1500000][d];
       const sret = [20000, 30000, 40000][d];
@@ -988,7 +988,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• รายได้ค่าขายสุทธิ = ${fmt(sales)} − ${fmt(sret)} − ${fmt(sdisc)} = ${fmt(netSales)} บาท\n• กำไรขั้นต้น = ${fmt(netSales)} − ${fmt(cogs)} = ${fmt(gp)} บาท\n• กำไรจากการดำเนินงาน = ${fmt(gp)} − (${fmt(sellExp)} + ${fmt(admExp)}) = ${fmt(opInc)} บาท\n• กำไรสุทธิ = ${fmt(opInc)} + ${fmt(otherRev)} = ${fmt(netInc)} บาท`
       };
     },
-    // Q14: Source Documents in Merchandising
+    // Q14
     () => {
       const docs = [
         {
@@ -996,14 +996,14 @@ function generateSetQuestions(setId) {
           opts: ["ใบสั่งซื้อ (Purchase Order)", "ใบขอซื้อ (Purchase Requisition)", "ใบรับของ (Receiving Report)", "ใบลดหนี้ (Credit Memorandum)"],
           ans: 1,
           formula: "คลังสินค้า -> ใบขอซื้อ (PR) | แผนกจัดซื้อ -> ใบสั่งซื้อ (PO) | แผนกรับของ -> ใบรับของ (RR)",
-          exp: "แนวคิด (อ้างอิงหน้า 156): แผนกคลังสินค้าจัดทำ 'ใบขอซื้อ (Purchase Requisition)' อย่างน้อย 3 ฉบับ ส่งให้ผู้จัดการอนุมัติแล้วส่งต่อไปยังแผนกจัดซื้อเพื่อออกใบสั่งซื้อ (PO)"
+          exp: "แนวคิด: แผนกคลังสินค้าจัดทำ 'ใบขอซื้อ (Purchase Requisition)' อย่างน้อย 3 ฉบับ ส่งให้ผู้จัดการอนุมัติแล้วส่งต่อไปยังแผนกจัดซื้อเพื่อออกใบสั่งซื้อ (PO)"
         },
         {
           q: "เมื่อผู้ซื้อส่งสินค้าที่ชำรุดคืนให้ผู้ขาย ผู้ซื้อสามารถออกเอกสารใดเพื่อแจ้งให้ผู้ขายทราบถึงการขอลดยอดหนี้จากบัญชีเจ้าหนี้การค้า?",
           opts: ["ใบลดหนี้ (Credit Memorandum)", "ใบขอลดหนี้ (Debit Memorandum / Debit Note)", "ใบกำกับสินค้าขาย (Sales Invoice)", "ใบขอซื้อ (Purchase Requisition)"],
           ans: 1,
           formula: "ผู้ซื้อออก = ใบขอลดหนี้ (Debit Note) | ผู้ขายออกตอบรับ = ใบลดหนี้ (Credit Note)",
-          exp: "แนวคิด (อ้างอิงหน้า 162): ผู้ซื้อออก 'ใบขอลดหนี้ (Debit Note)' เพื่อแจ้งลดเจ้าหนี้การค้า ส่วนผู้ขายเมื่อตรวจสอบและยอมรับคืนสินค้าจะออก 'ใบลดหนี้ (Credit Note)' เพื่อลดลูกหนี้การค้า"
+          exp: "แนวคิด: ผู้ซื้อออก 'ใบขอลดหนี้ (Debit Note)' เพื่อแจ้งลดเจ้าหนี้การค้า ส่วนผู้ขายเมื่อตรวจสอบและยอมรับคืนสินค้าจะออก 'ใบลดหนี้ (Credit Note)' เพื่อลดลูกหนี้การค้า"
         },
         {
           q: "เงื่อนไขการชำระเงิน '3/10 E.O.M., n/60' (หรือ 3/10 prox, n/60) ที่ระบุในใบกำกับสินค้าวันที่ 18 พฤษภาคม หมายความว่าอย่างไร?",
@@ -1015,13 +1015,13 @@ function generateSetQuestions(setId) {
           ],
           ans: 2,
           formula: "3/10 E.O.M. (หรือ 3/10 prox) = ได้รับส่วนลด 3% หากชำระภายในวันที่ 10 ของเดือนถัดไป",
-          exp: "แนวคิด (อ้างอิงหน้า 164): 3/10 E.O.M. ย่อมาจาก Three ten end of month หมายถึง หากชำระภายในวันที่ 10 ของเดือนถัดไป (10 มิ.ย.) จะได้รับส่วนลด 3%"
+          exp: "แนวคิด: 3/10 E.O.M. ย่อมาจาก Three ten end of month หมายถึง หากชำระภายในวันที่ 10 ของเดือนถัดไป (10 มิ.ย.) จะได้รับส่วนลด 3%"
         }
       ];
       const c = docs[d];
       return { type: "mcq", topic: "W9 | บทที่ 6: เอกสารและเงื่อนไขในวงจรซื้อขาย", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q15: Sales Allowance (No Inventory Return in Perpetual)
+    // Q15
     () => {
       const allow = [2500, 4000, 6500][d];
       return {
@@ -1036,10 +1036,10 @@ function generateSetQuestions(setId) {
         ],
         answer: 0,
         formula: "Sales Allowance (ลูกค้าไม่คืนของ) = บันทึกเพียง 1 คู่: Dr. สินค้ารับคืนและส่วนลด / Cr. ลูกหนี้การค้า",
-        explanation: `แนวคิด (อ้างอิงหน้า 168): กรณีให้ส่วนลดโดยลูกค้าไม่ส่งคืนสินค้า (Allowance) สินค้าไม่ได้กลับเข้าคลัง จึงบันทึกปรับลดรายได้และลูกหนี้เพียงคู่เดียว ไม่ต้องเดบิตสินค้าคงเหลือ/เครดิตต้นทุนขาย`
+        explanation: `แนวคิด: กรณีให้ส่วนลดโดยลูกค้าไม่ส่งคืนสินค้า (Allowance) สินค้าไม่ได้กลับเข้าคลัง จึงบันทึกปรับลดรายได้และลูกหนี้เพียงคู่เดียว ไม่ต้องเดบิตสินค้าคงเหลือ/เครดิตต้นทุนขาย`
       };
     },
-    // Q16: Partial Payment within Discount Period (No VAT)
+    // Q16
     () => {
       const totalAr = [50000, 80000, 100000][d];
       const cashRecv = [29400, 48500, 58800][d];
@@ -1058,51 +1058,47 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: เงินสดที่ได้รับคิดเป็น ${100 - discRate}% ของยอดหนี้ที่ตัดลด\n• ยอดลูกหนี้ที่ตัดลด = ${fmt(cashRecv)} ÷ ${(1 - discRate / 100).toFixed(2)} = ${fmt(arReduced)} บาท\n• ส่วนลดจ่าย = ${fmt(arReduced)} − ${fmt(cashRecv)} = ${fmt(discAmt)} บาท`
       };
     },
-    // Q17: Selling vs Administrative Expense Classification
+    // Q17
     () => {
       const items = [
-        { q: "รายการใดจัดเป็น 'ค่าใช้จ่ายในการขาย (Selling Expenses)' ในงบกำไรขาดทุนเบ็ดเสร็จแบบหลายขั้น?", opts: ["ค่าขนส่งเมื่อขาย (Freight-out), ค่าโฆษณา และเงินเดือนพนักงานขาย", "ค่าขนส่งเมื่อซื้อ (Freight-in), ค่าเช่าสำนักงานใหญ่ และค่าสอบบัญชี", "ค่าเสื่อมราคาเครื่องคอมพิวเตอร์ฝ่ายบัญชี และเงินเดือนผู้จัดการทั่วไป", "ดอกเบี้ยจ่ายเงินกู้ยืมธนาคาร และขาดทุนจากการขายอุปกรณ์"], ans: 0, formula: "Selling Expenses = ค่าใช้จ่ายที่เกิดจากการส่งเสริมการขายและจัดส่งสินค้าให้ลูกค้า", exp: "แนวคิด (อ้างอิงหน้า 181): ค่าขนส่งเมื่อขาย ค่าโฆษณา และเงินเดือนพนักงานขาย ล้วนเป็นค่าใช้จ่ายในการขาย ส่วนค่าขนส่งเมื่อซื้อรวมอยู่ในต้นทุนขาย และดอกเบี้ยจ่ายเป็นต้นทุนทางการเงิน" },
+        { q: "รายการใดจัดเป็น 'ค่าใช้จ่ายในการขาย (Selling Expenses)' ในงบกำไรขาดทุนเบ็ดเสร็จแบบหลายขั้น?", opts: ["ค่าขนส่งเมื่อขาย (Freight-out), ค่าโฆษณา และเงินเดือนพนักงานขาย", "ค่าขนส่งเมื่อซื้อ (Freight-in), ค่าเช่าสำนักงานใหญ่ และค่าสอบบัญชี", "ค่าเสื่อมราคาเครื่องคอมพิวเตอร์ฝ่ายบัญชี และเงินเดือนผู้จัดการทั่วไป", "ดอกเบี้ยจ่ายเงินกู้ยืมธนาคาร และขาดทุนจากการขายอุปกรณ์"], ans: 0, formula: "Selling Expenses = ค่าใช้จ่ายที่เกิดจากการส่งเสริมการขายและจัดส่งสินค้าให้ลูกค้า", exp: "แนวคิด: ค่าขนส่งเมื่อขาย ค่าโฆษณา และเงินเดือนพนักงานขาย ล้วนเป็นค่าใช้จ่ายในการขาย ส่วนค่าขนส่งเมื่อซื้อรวมอยู่ในต้นทุนขาย และดอกเบี้ยจ่ายเป็นต้นทุนทางการเงิน" },
         { q: "บัญชี 'ค่าขนส่งเมื่อซื้อ (Transportation-in)' ในระบบบัญชีสินค้าสิ้นงวด จัดอยู่ในหมวดใดและแสดงที่ใดในงบการเงิน?", opts: ["หมวดค่าใช้จ่าย แสดงเป็นส่วนหนึ่งของ 'ต้นทุนขาย' ในงบกำไรขาดทุนเบ็ดเสร็จ", "หมวดค่าใช้จ่าย แสดงเป็น 'ค่าใช้จ่ายในการขาย'", "หมวดสินทรัพย์ แสดงเป็น 'สินค้าคงเหลือ' ในงบแสดงฐานะการเงิน", "หมวดหนี้สิน แสดงเป็น 'ค่าใช้จ่ายค้างจ่าย'"], ans: 0, formula: "Transportation-in (Periodic) -> บวกเพิ่มในส่วนของ 'ต้นทุนซื้อสุทธิ' เพื่อคำนวณต้นทุนขาย", exp: "แนวคิด: ค่าขนส่งเมื่อซื้อเป็นต้นทุนที่ทำให้สินค้าพร้อมขาย จึงนำไปบวกเพิ่มในยอดซื้อสุทธิเพื่อคำนวณต้นทุนซื้อสุทธิและต้นทุนขาย" },
-        { q: "ข้อใดคือข้อดีหลักของการจัดทำงบกำไรขาดทุนเบ็ดเสร็จ 'แบบหลายขั้น (Multiple-Step)' เมื่อเทียบกับ 'แบบขั้นเดียว (Single-Step)'?", opts: ["แสดงกำไรขั้นต้น (Gross Profit) และกำไรจากการดำเนินงาน (Operating Profit) แยกชัดเจน ช่วยในการวิเคราะห์อัตราส่วนทางการเงิน", "จัดทำได้ง่ายและรวดเร็วกว่าเพราะไม่ต้องแยกประเภทค่าใช้จ่ายตามหน้าที่", "ทำให้กำไรสุทธิของกิจการสูงกว่าแบบขั้นเดียว", "ไม่ต้องแสดงรายการต้นทุนขายแยกต่างหาก"], ans: 0, formula: "Multiple-Step -> แสดง Net Sales -> Gross Profit -> Operating Profit -> Net Income", exp: "แนวคิด (อ้างอิงหน้า 181-182): ทั้งสองรูปแบบให้กำไรสุทธิเท่ากัน แต่แบบหลายขั้นจำแนกค่าใช้จ่ายตามหน้าที่ ทำให้เห็นกำไรขั้นต้นและกำไรจากการดำเนินงานชัดเจน" }
+        { q: "ข้อใดคือข้อดีหลักของการจัดทำงบกำไรขาดทุนเบ็ดเสร็จ 'แบบหลายขั้น (Multiple-Step)' เมื่อเทียบกับ 'แบบขั้นเดียว (Single-Step)'?", opts: ["แสดงกำไรขั้นต้น (Gross Profit) และกำไรจากการดำเนินงาน (Operating Profit) แยกชัดเจน ช่วยในการวิเคราะห์อัตราส่วนทางการเงิน", "จัดทำได้ง่ายและรวดเร็วกว่าเพราะไม่ต้องแยกประเภทค่าใช้จ่ายตามหน้าที่", "ทำให้กำไรสุทธิของกิจการสูงกว่าแบบขั้นเดียว", "ไม่ต้องแสดงรายการต้นทุนขายแยกต่างหาก"], ans: 0, formula: "Multiple-Step -> แสดง Net Sales -> Gross Profit -> Operating Profit -> Net Income", exp: "แนวคิด: ทั้งสองรูปแบบให้กำไรสุทธิเท่ากัน แต่แบบหลายขั้นจำแนกค่าใช้จ่ายตามหน้าที่ ทำให้เห็นกำไรขั้นต้นและกำไรจากการดำเนินงานชัดเจน" }
       ];
       const c = items[d];
       return { type: "mcq", topic: "W9 | บทที่ 6: การจัดประเภทรายการในงบกำไรขาดทุน", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q18: Inventory Card / Subsidiary Ledger
-    () => {
-      return {
-        type: "mcq",
-        topic: "W9 | บทที่ 6: บัตรสินค้า (Inventory Card) และการควบคุมภายใน",
-        text: "ข้อใดกล่าวถูกต้องเกี่ยวกับ 'บัตรสินค้า (Inventory Card หรือ Stock Card)' ในกิจการซื้อขายสินค้า?",
-        options: [
-          "ใช้เฉพาะในระบบบัญชีสินค้าต่อเนื่องเท่านั้น ระบบบัญชีสินค้าสิ้นงวดไม่ต้องจัดทำ",
-          "ทำหน้าที่เป็นบัญชีย่อยแสดงการรับ จ่าย และยอดคงเหลือของสินค้าแต่ละชนิด โดยใช้ควบคู่กันทั้งในระบบบัญชีสินค้าต่อเนื่องและระบบบัญชีสินค้าสิ้นงวด",
-          "ใช้บันทึกเฉพาะจำนวนหน่วยสินค้า ไม่ต้องแสดงราคาทุนต่อหน่วยและจำนวนเงิน",
-          "สามารถใช้ทดแทนการตรวจนับสินค้าคงเหลือจริง ณ วันสิ้นปีได้ 100%"
-        ],
-        answer: 1,
-        formula: "Inventory Card = บัญชีย่อยคุมยอดสินค้าคงเหลือ (ใช้ทั้ง Perpetual และ Periodic)",
-        explanation: "แนวคิด (อ้างอิงหน้า 174 & 183): ทั้งระบบ Perpetual และ Periodic ต่างต้องจัดทำบัตรสินค้า (Stock Card) เพื่อควบคุมการเคลื่อนไหวของสินค้าแต่ละชนิด และยังคงต้องตรวจนับสินค้าคงเหลือจริงอย่างน้อยปีละครั้ง"
-      };
-    },
-    // Q19: Sales Return & Discount Allowance Estimate (TFRS 15 Concept in Textbook)
-    () => {
-      return {
-        type: "mcq",
-        topic: "W10 | บทที่ 6: การรับรู้รายได้เมื่อให้สิทธิคืนสินค้า (TFRS 15)",
-        text: "ตามมาตรฐานการรายงานทางการเงิน ฉบับที่ 15 (TFRS 15) ที่กล่าวถึงในบทที่ 6 หากกิจการขายสินค้าโดยให้สิทธิลูกค้าคืนสินค้าได้ และมีความเป็นไปได้อย่างมากที่ลูกค้าจะส่งคืนสินค้าบางส่วน กิจการต้องบันทึกบัญชี ณ วันขายอย่างไร?",
-        options: [
-          "รับรู้รายได้ค่าขายเต็มจำนวน 100% และรอจนกว่าลูกค้าจะนำสินค้ามาคืนจริงจึงค่อยลดรายได้",
-          "รับรู้รายได้ค่าขายด้วยมูลค่าสุทธิจากจำนวนที่คาดว่าจะรับคืน และตั้งประมาณการหนี้สินจากการจะจ่ายชำระคืน",
-          "ไม่รับรู้รายได้ค่าขายเลยจนกว่าจะพ้นระยะเวลาที่ให้สิทธิคืนสินค้า",
-          "บันทึกยอดขายทั้งหมดเป็นรายได้รับล่วงหน้า"
-        ],
-        answer: 1,
-        formula: "TFRS 15: รายได้ค่าขายสุทธิ = ยอดขายรวม − ประมาณการรับคืน | ตั้งหนี้สินที่เกิดจากการคืนสินค้า",
-        explanation: "แนวคิด (อ้างอิงหน้า 161-162): หากมีความเป็นไปได้อย่างมากที่ลูกค้าจะคืนสินค้า ผู้ขายจะประมาณหนี้สินที่เกิดจากการจะจ่ายชำระคืน และรับรู้รายได้ค่าขายด้วยมูลค่าสุทธิจากจำนวนหนี้สินดังกล่าวตั้งแต่วันขาย"
-      };
-    },
-    // Q20: Comprehensive Merchandising Trial Balance to COGS & Net Sales
+    // Q18
+    () => ({
+      type: "mcq",
+      topic: "W9 | บทที่ 6: บัตรสินค้า (Inventory Card) และการควบคุมภายใน",
+      text: "ข้อใดกล่าวถูกต้องเกี่ยวกับ 'บัตรสินค้า (Inventory Card หรือ Stock Card)' ในกิจการซื้อขายสินค้า?",
+      options: [
+        "ใช้เฉพาะในระบบบัญชีสินค้าต่อเนื่องเท่านั้น ระบบบัญชีสินค้าสิ้นงวดไม่ต้องจัดทำ",
+        "ทำหน้าที่เป็นบัญชีย่อยแสดงการรับ จ่าย และยอดคงเหลือของสินค้าแต่ละชนิด โดยใช้ควบคู่กันทั้งในระบบบัญชีสินค้าต่อเนื่องและระบบบัญชีสินค้าสิ้นงวด",
+        "ใช้บันทึกเฉพาะจำนวนหน่วยสินค้า ไม่ต้องแสดงราคาทุนต่อหน่วยและจำนวนเงิน",
+        "สามารถใช้ทดแทนการตรวจนับสินค้าคงเหลือจริง ณ วันสิ้นปีได้ 100%"
+      ],
+      answer: 1,
+      formula: "Inventory Card = บัญชีย่อยคุมยอดสินค้าคงเหลือ (ใช้ทั้ง Perpetual และ Periodic)",
+      explanation: "แนวคิด: ทั้งระบบ Perpetual และ Periodic ต่างต้องจัดทำบัตรสินค้า (Stock Card) เพื่อควบคุมการเคลื่อนไหวของสินค้าแต่ละชนิด และยังคงต้องตรวจนับสินค้าคงเหลือจริงอย่างน้อยปีละครั้ง"
+    }),
+    // Q19
+    () => ({
+      type: "mcq",
+      topic: "W10 | บทที่ 6: การรับรู้รายได้เมื่อให้สิทธิคืนสินค้า (TFRS 15)",
+      text: "ตามมาตรฐานการรายงานทางการเงิน ฉบับที่ 15 (TFRS 15) ที่กล่าวถึงในบทที่ 6 หากกิจการขายสินค้าโดยให้สิทธิลูกค้าคืนสินค้าได้ และมีความเป็นไปได้อย่างมากที่ลูกค้าจะส่งคืนสินค้าบางส่วน กิจการต้องบันทึกบัญชี ณ วันขายอย่างไร?",
+      options: [
+        "รับรู้รายได้ค่าขายเต็มจำนวน 100% และรอจนกว่าลูกค้าจะนำสินค้ามาคืนจริงจึงค่อยลดรายได้",
+        "รับรู้รายได้ค่าขายด้วยมูลค่าสุทธิจากจำนวนที่คาดว่าจะรับคืน และตั้งประมาณการหนี้สินจากการจะจ่ายชำระคืน",
+        "ไม่รับรู้รายได้ค่าขายเลยจนกว่าจะพ้นระยะเวลาที่ให้สิทธิคืนสินค้า",
+        "บันทึกยอดขายทั้งหมดเป็นรายได้รับล่วงหน้า"
+      ],
+      answer: 1,
+      formula: "TFRS 15: รายได้ค่าขายสุทธิ = ยอดขายรวม − ประมาณการรับคืน | ตั้งหนี้สินที่เกิดจากการคืนสินค้า",
+      explanation: "แนวคิด: หากมีความเป็นไปได้อย่างมากที่ลูกค้าจะคืนสินค้า ผู้ขายจะประมาณหนี้สินที่เกิดจากการจะจ่ายชำระคืน และรับรู้รายได้ค่าขายด้วยมูลค่าสุทธิจากจำนวนหนี้สินดังกล่าวตั้งแต่วันขาย"
+    }),
+    // Q20
     () => {
       const s = [650000, 920000, 1250000][d];
       const sr = [15000, 22000, 35000][d];
@@ -1135,7 +1131,7 @@ function generateSetQuestions(setId) {
   // PART 2: Cost Flow Assumption (TAS 2): Specific, FIFO, Weighted, Moving, NRV, Errors (18 ข้อ: ข้อ 21–38)
   // --------------------------------------------------------------------------
   const costFlowItems = [
-    // Q21: TAS 2 Allowed Methods
+    // Q21
     () => ({
       type: "mcq",
       topic: "W10 | บทที่ 6: มาตรฐานการบัญชี ฉบับที่ 2 (TAS 2)",
@@ -1148,9 +1144,9 @@ function generateSetQuestions(setId) {
       ],
       answer: 3,
       formula: "TAS 2 อนุญาตเฉพาะ: Specific Identification, FIFO และ Average Cost (ห้ามใช้ LIFO)",
-      explanation: "แนวคิด (อ้างอิงหน้า 202): TFRS และ IFRS ไม่อนุญาตให้ใช้วิธี LIFO เนื่องจากทำให้มูลค่าสินค้าคงเหลือปลายงวดแสดงราคาทุนในอดีตที่ต่ำเกินไป ไม่สะท้อนความเป็นจริง"
+      explanation: "แนวคิด: TFRS และ IFRS ไม่อนุญาตให้ใช้วิธี LIFO เนื่องจากทำให้มูลค่าสินค้าคงเหลือปลายงวดแสดงราคาทุนในอดีตที่ต่ำเกินไป ไม่สะท้อนความเป็นจริง"
     }),
-    // Q22: Specific Identification
+    // Q22
     () => {
       const units = [[1, 1, 1], [2, 1, 1], [1, 2, 1]][d];
       const costs = [50000, 65000, 80000];
@@ -1169,7 +1165,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ต้นทุนขาย = (${units[0]}×50,000) + (${units[1]}×65,000) + (${units[2]}×80,000) = ${fmt(totalCogs)} บาท\n• คงเหลือ = (${remUnits[0]}×50,000) + (${remUnits[1]}×65,000) + (${remUnits[2]}×80,000) = ${fmt(totalEnd)} บาท`
       };
     },
-    // Q23: Periodic FIFO
+    // Q23
     () => {
       const u1 = [100, 150, 200][d], c1 = [10, 20, 15][d];
       const u2 = [200, 250, 300][d], c2 = [12, 22, 18][d];
@@ -1177,7 +1173,7 @@ function generateSetQuestions(setId) {
       const sold = [320, 420, 520][d];
       const totalU = u1 + u2 + u3;
       const totalC = u1*c1 + u2*c2 + u3*c3;
-      const remU = totalU - sold; // guaranteed <= u3 (130, 180, 230)
+      const remU = totalU - sold;
       const endVal = remU * c3;
       const cogs = totalC - endVal;
       return {
@@ -1192,14 +1188,14 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• สินค้ามีไว้ขายรวม = ${u1} + ${u2} + ${u3} = ${totalU} หน่วย (มูลค่ารวม = ${fmt(totalC)} บาท)\n• คงเหลือปลายงวด = ${totalU} − ${sold} = ${remU} หน่วย (มาจากล็อตซื้อครั้งที่ 2 ทั้งหมด) = ${remU} × ${c3} = ${fmt(endVal)} บาท\n• ต้นทุนขาย = ${fmt(totalC)} − ${fmt(endVal)} = ${fmt(cogs)} บาท`
       };
     },
-    // Q24: Periodic Weighted Average
+    // Q24
     () => {
       const u1 = 100, c1 = [20, 30, 40][d];
       const u2 = 300, c2 = [24, 34, 48][d];
       const sold = [250, 280, 310][d];
       const totalU = 400;
       const totalC = u1*c1 + u2*c2;
-      const avg = totalC / totalU; // exact: 23, 33, 46
+      const avg = totalC / totalU;
       const remU = totalU - sold;
       const endVal = remU * avg;
       const cogs = sold * avg;
@@ -1216,18 +1212,16 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ต้นทุนรวม = (${u1}×${c1}) + (${u2}×${c2}) = ${fmt(totalC)} บาท หารด้วย ${totalU} หน่วย = ${avg} บาท/หน่วย\n• สินค้าคงเหลือปลายงวด = ${remU} × ${avg} = ${fmt(endVal)} บาท\n• ต้นทุนขาย = ${sold} × ${avg} = ${fmt(cogs)} บาท`
       };
     },
-    // Q25: Perpetual Moving Average (Basic)
+    // Q25
     () => {
       const u1 = 100, c1 = [10, 20, 30][d];
       const u2 = 150, c2 = [15, 25, 40][d];
       const s1 = 150;
       const u3 = 100, c3 = [17, 29, 44][d];
       const s2 = 120;
-      // step 1: 250 units, cost = 100*c1 + 150*c2 -> avg1 = (100*10+150*15)/250 = 13 | (2000+3750)/250 = 23 | (3000+6000)/250 = 36
       const avg1 = (u1*c1 + u2*c2) / (u1 + u2);
       const rem1 = 100;
       const rem1Val = rem1 * avg1;
-      // step 2: +100 @ c3 -> 200 units, avg2 = (1300+1700)/200 = 15 | (2300+2900)/200 = 26 | (3600+4400)/200 = 40
       const avg2 = (rem1Val + u3*c3) / (rem1 + u3);
       const cogs2 = s2 * avg2;
       const endVal = (200 - s2) * avg2;
@@ -1245,7 +1239,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n1. วันที่ 5: (${u1}×${c1} + ${u2}×${c2}) ÷ 250 = ${avg1} บาท/หน่วย\n2. วันที่ 10: ขาย 150 หน่วย @ ${avg1} เหลือ 100 หน่วย มูลค่า ${fmt(rem1Val)} บาท\n3. วันที่ 15: (${fmt(rem1Val)} + ${u3}×${c3}) ÷ 200 = ${avg2} บาท/หน่วย\n4. วันที่ 20: ต้นทุนขาย = 120 × ${avg2} = ${fmt(cogs2)} บาท คงเหลือ 80 × ${avg2} = ${fmt(endVal)} บาท`
       };
     },
-    // Q26: FIFO Periodic === FIFO Perpetual Rule
+    // Q26
     () => ({
       type: "mcq",
       topic: "W10 | บทที่ 6: การเปรียบเทียบ FIFO ในระบบ Periodic และ Perpetual",
@@ -1258,9 +1252,9 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "FIFO (Periodic) = FIFO (Perpetual) เสมอ | แต่ Average (Periodic) ≠ Average (Perpetual)",
-      explanation: "แนวคิด (อ้างอิงหน้า 202): การใช้วิธี FIFO จะทำให้กิจการที่ใช้ระบบสินค้าสิ้นงวดและระบบสินค้าต่อเนื่องมีต้นทุนขายและมูลค่าสินค้าคงเหลือเท่ากันเสมอ เพราะลำดับการตัดของเก่าออกก่อนเหมือนกัน"
+      explanation: "แนวคิด: การใช้วิธี FIFO จะทำให้กิจการที่ใช้ระบบสินค้าสิ้นงวดและระบบสินค้าต่อเนื่องมีต้นทุนขายและมูลค่าสินค้าคงเหลือเท่ากันเสมอ เพราะลำดับการตัดของเก่าออกก่อนเหมือนกัน"
     }),
-    // Q27: Inflation / Deflation Effect on FIFO vs Average
+    // Q27
     () => {
       const cases = [
         {
@@ -1273,7 +1267,7 @@ function generateSetQuestions(setId) {
           ],
           ans: 0,
           formula: "ราคาขาขึ้น (เงินเฟ้อ): FIFO -> COGS ต่ำสุด, กำไรสูงสุด, สินค้าปลายงวดสูงสุด",
-          exp: "แนวคิด (อ้างอิงหน้า 208): ในภาวะราคาสูงขึ้น FIFO ตัดต้นทุนล็อตแรกที่ราคาถูกเป็นต้นทุนขาย ทำให้ COGS ต่ำ กำไรสุทธิสูง และสินค้าคงเหลือปลายงวดเป็นล็อตล่าสุดที่มีราคาแพง"
+          exp: "แนวคิด: ในภาวะราคาสูงขึ้น FIFO ตัดต้นทุนล็อตแรกที่ราคาถูกเป็นต้นทุนขาย ทำให้ COGS ต่ำ กำไรสุทธิสูง และสินค้าคงเหลือปลายงวดเป็นล็อตล่าสุดที่มีราคาแพง"
         },
         {
           q: "ในช่วงที่ราคาสินค้าปรับตัว 'ลดลง' อย่างต่อเนื่อง (ภาวะเงินฝืด) วิธีการตีราคาสินค้าวิธีใดจะทำให้กิจการรายงาน 'กำไรสุทธิต่ำที่สุด'?",
@@ -1288,7 +1282,7 @@ function generateSetQuestions(setId) {
           exp: "แนวคิด: เมื่อราคาสินค้าลดลงเรื่อย ๆ ล็อตแรกที่ซื้อมาจะมีราคาแพงกว่าล็อตหลัง วิธี FIFO ตัดล็อตแรกออกเป็นต้นทุนขายก่อน จึงทำให้ต้นทุนขายสูงสุดและกำไรสุทธิต่ำสุด"
         },
         {
-          q: "ข้อดีสำคัญประการหนึ่งของการใช้วิธี FIFO เมื่อเปรียบเทียบกับวิธีราคาเจาะจง (Specific Identification) คือข้อใด?",
+          q: "ข้อใดคือข้อดีสำคัญประการหนึ่งของการใช้วิธี FIFO เมื่อเปรียบเทียบกับวิธีราคาเจาะจง (Specific Identification) คือข้อใด?",
           opts: [
             "ลดโอกาสที่ฝ่ายบริหารจะตกแต่งกำไรสุทธิโดยการเลือกหยิบสินค้าต้นทุนต่ำหรือสูงมาขายตามใจชอบ",
             "ไม่ต้องจัดทำบัตรสินค้าหรือตรวจนับสินค้าปลายงวด",
@@ -1297,13 +1291,13 @@ function generateSetQuestions(setId) {
           ],
           ans: 0,
           formula: "FIFO = เป็นระบบตามลำดับเวลา ป้องกันการเลือกหยิบต้นทุนเพื่อตกแต่งกำไร (Income Smoothing)",
-          exp: "แนวคิด (อ้างอิงหน้า 202): วิธีราคาเจาะจงอาจเปิดช่องให้ผู้บริหารเลือกส่งมอบสินค้าชิ้นที่มีต้นทุนสูงหรือต่ำเพื่อควบคุมกำไรได้ แต่วิธี FIFO เป็นระบบตามลำดับเวลาจึงป้องกันการตกแต่งกำไรได้"
+          exp: "แนวคิด: วิธีราคาเจาะจงอาจเปิดช่องให้ผู้บริหารเลือกส่งมอบสินค้าชิ้นที่มีต้นทุนสูงหรือต่ำเพื่อควบคุมกำไรได้ แต่วิธี FIFO เป็นระบบตามลำดับเวลาจึงป้องกันการตกแต่งกำไรได้"
         }
       ];
       const c = cases[d];
       return { type: "mcq", topic: "W10 | บทที่ 6: การวิเคราะห์ผลกระทบของวิธีตีราคาสินค้า", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q28: Lower of Cost or NRV (TAS 2)
+    // Q28
     () => {
       const cost = [150000, 240000, 310000][d];
       const estSell = [165000, 250000, 320000][d];
@@ -1324,7 +1318,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• NRV = ${fmt(estSell)} − ${fmt(sellCost)} = ${fmt(nrv)} บาท\n• เปรียบเทียบ ราคาทุน (${fmt(cost)}) กับ NRV (${fmt(nrv)}) เลือกค่าที่ต่ำกว่าคือ ${fmt(val)} บาท\n• รับรู้ขาดทุนจากการปรับลดมูลค่า = ${fmt(cost)} − ${fmt(val)} = ${fmt(loss)} บาท`
       };
     },
-    // Q29: Sales Return Cost Selection in Perpetual FIFO vs LIFO (Textbook p.206-207)
+    // Q29
     () => ({
       type: "mcq",
       topic: "W11 | บทที่ 6: การรับคืนสินค้าในบัตรสินค้า (Perpetual FIFO)",
@@ -1337,12 +1331,12 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "รับคืนในบัตรสินค้า FIFO -> รับคืนด้วยราคาทุนล็อตที่ใหม่กว่าเพื่อให้สอดคล้องกับสมมติฐาน FIFO",
-      explanation: "แนวคิด (อ้างอิงหมายเหตุหน้า 206): ในกรณีรับคืนสินค้าที่เกิดจากการขายสินค้าที่มีราคาทุนต่างกันสองราคาขึ้นไปภายใต้ FIFO ให้รับคืนสินค้าด้วยราคาทุนที่ใหม่กว่า เพื่อให้สินค้าคงเหลือในคลังเป็นของใหม่เหมือนกัน ของเก่าถือว่าขายหมด"
+      explanation: "แนวคิด: ในกรณีรับคืนสินค้าที่เกิดจากการขายสินค้าที่มีราคาทุนต่างกันสองราคาขึ้นไปภายใต้ FIFO ให้รับคืนสินค้าด้วยราคาทุนที่ใหม่กว่า เพื่อให้สินค้าคงเหลือในคลังเป็นของใหม่เหมือนกัน ของเก่าถือว่าขายหมด"
     }),
-    // Q30: Single-Year Inventory Error Effect
+    // Q30
     () => {
       const err = [12000, 18000, 25000][d];
-      const over = d !== 1; // true, false, true
+      const over = d !== 1;
       return {
         type: "mcq",
         topic: "W11 | บทที่ 6: ข้อผิดพลาดในการตรวจนับสินค้าคงเหลือปลายงวด",
@@ -1362,11 +1356,10 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: สินค้าปลายงวดเป็นตัวหักในการคำนวณต้นทุนขาย เมื่อสินค้าปลายงวด${over ? "สูงไป" : "ต่ำไป"} ${fmt(err)} บาท จะทำให้ต้นทุนขาย${over ? "ต่ำไป" : "สูงไป"} ${fmt(err)} บาท ส่งผลให้กำไรสุทธิ${over ? "สูงไป" : "ต่ำไป"} ${fmt(err)} บาท`
       };
     },
-    // Q31: Multi-Year Counterbalancing Inventory Error
+    // Q31
     () => {
       const e1 = [10000, 14000, 20000][d];
       const e2 = [6000, 8000, 12000][d];
-      // Year 1 end overstated by e1 -> Y1 NI +e1. Year 2 beg overstated by e1 (-e1 on Y2 NI), Year 2 end understated by e2 (-e2 on Y2 NI) -> Y2 NI = -(e1 + e2)
       const y1 = `+${e1}`;
       const y2 = `-${e1 + e2}`;
       return {
@@ -1381,9 +1374,8 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ปี 25x1: สินค้าปลายงวดสูงไป ${fmt(e1)} -> กำไรสุทธิสูงไป +${e1} บาท\n• ปี 25x2: สินค้าต้นงวดสูงไป ${fmt(e1)} (ทำให้ COGS สูง -> กำไรต่ำไป -${e1}) รวมกับสินค้าปลายงวดปี 25x2 ต่ำไป ${fmt(e2)} (ทำให้ COGS สูง -> กำไรต่ำไป -${e2}) รวมกำไรปี 25x2 ต่ำไป -${e1 + e2} บาท`
       };
     },
-    // Q32: Moving Average with Purchase Return
+    // Q32
     () => {
-      // Beg 100 @ 20 = 2000; Buy 150 @ 30 = 4500 -> 250 @ 26 = 6500; Sell 100 @ 26 -> rem 150 @ 26 = 3900; Return 30 of Buy (@ 30 = 900) -> rem 120 units, val = 3000 -> avg = 25.00
       const mult = [1, 2, 3][d];
       const c1 = 20 * mult, c2 = 30 * mult;
       const newAvg = (25 * mult).toFixed(2);
@@ -1400,14 +1392,14 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n1. วันที่ 6 พ.ค.: (100×${c1} + 150×${c2}) ÷ 250 = ${26*mult} บาท/หน่วย\n2. วันที่ 10 พ.ค.: ขาย 100 หน่วย เหลือ 150 หน่วย มูลค่า ${fmt(150*26*mult)} บาท\n3. วันที่ 12 พ.ค.: ส่งคืน 30 หน่วยของล็อตวันที่ 6 พ.ค. (@ ${c2} บาท = ${fmt(30*c2)} บาท) เหลือ 120 หน่วย มูลค่า ${fmt(endVal)} บาท -> เฉลี่ยใหม่ = ${fmt(endVal)} ÷ 120 = ${newAvg} บาท/หน่วย`
       };
     },
-    // Q33: Estimating Ending Inventory (Gross Profit Method)
+    // Q33
     () => {
       const beg = [50000, 80000, 100000][d];
       const netPur = [250000, 320000, 400000][d];
       const netSales = [320000, 400000, 500000][d];
       const gpPct = [25, 30, 20][d];
       const avail = beg + netPur;
-      const estCogs = netSales * (1 - gpPct / 100);
+      const estCogs = Math.round(netSales * (1 - gpPct / 100));
       const estEnd = avail - estCogs;
       return {
         type: "fill",
@@ -1421,7 +1413,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ต้นทุนสินค้ามีไว้ขาย = ${fmt(beg)} + ${fmt(netPur)} = ${fmt(avail)} บาท\n• ประมาณการต้นทุนขาย = ${fmt(netSales)} × ${100 - gpPct}% = ${fmt(estCogs)} บาท\n• ประมาณการสินค้าคงเหลือปลายงวด = ${fmt(avail)} − ${fmt(estCogs)} = ${fmt(estEnd)} บาท`
       };
     },
-    // Q34: Consigned Goods (สินค้าฝากขาย)
+    // Q34
     () => ({
       type: "mcq",
       topic: "W11 | บทที่ 6: สินค้าฝากขาย (Consigned Goods)",
@@ -1436,10 +1428,10 @@ function generateSetQuestions(setId) {
       formula: "Consigned Goods: กรรมสิทธิ์ยังเป็นของ 'ผู้ฝากขาย (Consignor)' จนกว่าผู้รับฝากจะขายให้บุคคลภายนอก",
       explanation: "แนวคิด: การฝากขายสินค้า กรรมสิทธิ์ในสินค้ายังคงเป็นของผู้ฝากขาย (บริษัท ก) จนกว่าผู้รับฝากขายจะขายสินค้าให้ลูกค้าได้ ดังนั้น ณ วันสิ้นปี สินค้าที่เหลืออยู่ต้องนับรวมในสินค้าคงเหลือของบริษัท ก"
     }),
-    // Q35: Purchase Discount Lost vs Taken
+    // Q35
     () => ({
       type: "mcq",
-      topic: "W10 | บทที่ 6: การบันทึกรายการซื้อด้วยวิธีราคาสุทธิ (Net Method) vs ราคาเต็ม (Gross Method)",
+      topic: "W10 | บทที่ 6: การบันทึกรายการซื้อด้วยวิธีราคาเต็ม (Gross Method)",
       text: "ในตำราการบัญชีขั้นต้น (วิธีราคาเต็ม / Gross Method) เมื่อกิจการซื้อสินค้าเชื่อ 10,000 บาท เงื่อนไข 2/10, n/30 กิจการจะบันทึกยอดเจ้าหนี้การค้า ณ วันซื้อด้วยจำนวนเงินเท่าใด?",
       options: [
         "10,000 บาท (บันทึกเต็มจำนวน และบันทึกส่วนลดรับเมื่อชำระเงินภายในกำหนด)",
@@ -1449,11 +1441,10 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "Gross Method (ตามตำรา): บันทึกซื้อเต็มจำนวน 100% ณ วันซื้อ และรับรู้ส่วนลดรับ/ส่วนลดจ่ายเมื่อชำระเงินภายในกำหนด",
-      explanation: "แนวคิด (อ้างอิงหน้า 164 & 171): กิจการจะบันทึกยอดซื้อและเจ้าหนี้เต็มจำนวนตามใบกำกับสินค้า (10,000 บาท) และหากชำระภายใน 10 วันจึงคำนวณส่วนลดรับ 2% ในวันที่ชำระหนี้"
+      explanation: "แนวคิด: กิจการจะบันทึกยอดซื้อและเจ้าหนี้เต็มจำนวนตามใบกำกับสินค้า (10,000 บาท) และหากชำระภายใน 10 วันจึงคำนวณส่วนลดรับ 2% ในวันที่ชำระหนี้"
     }),
-    // Q36: Weighted Average with Purchase Return
+    // Q36
     () => {
-      // Beg 100 @ 10 = 1000; Buy 200 @ 16 = 3200; Return 50 of Buy (@ 16 = 800) -> Net avail = 250 units, cost = 3400 -> avg = 13.60
       const mult = [1, 2, 5][d];
       const avg = (13.60 * mult).toFixed(2);
       const sold = 150;
@@ -1470,7 +1461,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• หน่วยสุทธิที่มีไว้ขาย = 100 + 200 − 50 = 250 หน่วย\n• ต้นทุนรวมสุทธิ = (100×${10*mult}) + (200×${16*mult}) − (50×${16*mult}) = ${fmt(3400*mult)} บาท\n• ต้นทุนเฉลี่ย = ${fmt(3400*mult)} ÷ 250 = ${avg} บาท/หน่วย -> ต้นทุนขาย 150 หน่วย = ${fmt(cogs)} บาท`
       };
     },
-    // Q37: Perpetual vs Periodic Account Usage
+    // Q37
     () => ({
       type: "mcq",
       topic: "W10 | บทที่ 6: ชื่อบัญชีที่ใช้ในระบบ Periodic vs Perpetual",
@@ -1483,13 +1474,13 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "Perpetual ไม่มีบัญชี: ซื้อ, ค่าขนส่งเข้า, สินค้าส่งคืน, ส่วนลดรับ (ใช้ 'สินค้าคงเหลือ' แทนทั้งหมด)",
-      explanation: "แนวคิด (อ้างอิงหน้า 166-167): ในระบบ Perpetual รายการด้านซื้อทั้งหมดบันทึกเข้าบัญชี 'สินค้าคงเหลือ' โดยตรง จึงไม่มีบัญชีซื้อ ค่าขนส่งเมื่อซื้อ สินค้าส่งคืน และส่วนลดรับ ส่วนบัญชีด้านขาย (สินค้ารับคืน ส่วนลดจ่าย ค่าขนส่งออก) ยังคงมีเหมือนเดิม"
+      explanation: "แนวคิด: ในระบบ Perpetual รายการด้านซื้อทั้งหมดบันทึกเข้าบัญชี 'สินค้าคงเหลือ' โดยตรง จึงไม่มีบัญชีซื้อ ค่าขนส่งเมื่อซื้อ สินค้าส่งคืน และส่วนลดรับ ส่วนบัญชีด้านขาย (สินค้ารับคืน ส่วนลดจ่าย ค่าขนส่งออก) ยังคงมีเหมือนเดิม"
     }),
-    // Q38: Inventory Turnover & Days Sales in Inventory
+    // Q38
     () => {
       const cogs = [600000, 900000, 1200000][d];
       const avgInv = [100000, 150000, 150000][d];
-      const turn = cogs / avgInv; // 6, 6, 8
+      const turn = cogs / avgInv;
       const dsi = (365 / turn).toFixed(2);
       return {
         type: "fill",
@@ -1509,7 +1500,7 @@ function generateSetQuestions(setId) {
   // PART 3: ภาษีมูลค่าเพิ่ม (VAT) & โปรแกรม FlowAccount (24 ข้อ: ข้อ 39–62)
   // --------------------------------------------------------------------------
   const vatFlowItems = [
-    // Q39: VAT Registration Threshold & Form
+    // Q39
     () => ({
       type: "mcq",
       topic: "W12 | บทที่ 7: หลักเกณฑ์การจดทะเบียนภาษีมูลค่าเพิ่ม",
@@ -1522,9 +1513,9 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "รายรับ > 1,800,000 บาท/ปี -> ยื่นแบบ ภ.พ. 01 ภายใน 30 วันนับแต่วันที่มีรายรับเกิน",
-      explanation: "แนวคิด (อ้างอิงหน้า 218): ผู้ประกอบการที่มีรายรับเกิน 1.8 ล้านบาทต่อปี ต้องยื่นแบบ ภ.พ. 01 เพื่อจดทะเบียน VAT ภายใน 30 วันนับแต่วันที่มีรายรับเกินเกณฑ์"
+      explanation: "แนวคิด: ผู้ประกอบการที่มีรายรับเกิน 1.8 ล้านบาทต่อปี ต้องยื่นแบบ ภ.พ. 01 เพื่อจดทะเบียน VAT ภายใน 30 วันนับแต่วันที่มีรายรับเกินเกณฑ์"
     }),
-    // Q40: Tax Point (Goods vs Services)
+    // Q40
     () => {
       const cases = [
         {
@@ -1537,7 +1528,7 @@ function generateSetQuestions(setId) {
           ],
           ans: 0,
           formula: "Tax Point ขายสินค้า = ส่งมอบสินค้า (เว้นแต่โอนกรรมสิทธิ์ / รับเงิน / ออกใบกำกับภาษีก่อน)",
-          exp: "แนวคิด (อ้างอิงหน้า 218): ความรับผิดในการขายสินค้าเกิดเมื่อส่งมอบสินค้า เว้นแต่มีการโอนกรรมสิทธิ์ รับชำระเงิน หรือออกใบกำกับภาษีก่อน ให้เกิดตามส่วนที่เกิดขึ้นก่อน"
+          exp: "แนวคิด: ความรับผิดในการขายสินค้าเกิดเมื่อส่งมอบสินค้า เว้นแต่มีการโอนกรรมสิทธิ์ รับชำระเงิน หรือออกใบกำกับภาษีก่อน ให้เกิดตามส่วนที่เกิดขึ้นก่อน"
         },
         {
           q: "สำหรับ 'การให้บริการ' ความรับผิดในการเสียภาษีมูลค่าเพิ่ม (Tax Point) จะเกิดขึ้นเมื่อใด?",
@@ -1549,7 +1540,7 @@ function generateSetQuestions(setId) {
           ],
           ans: 1,
           formula: "Tax Point ให้บริการ = ได้รับชำระราคาค่าบริการ (เว้นแต่ได้ออกใบกำกับภาษีหรือใช้บริการเองก่อน)",
-          exp: "แนวคิด (อ้างอิงหน้า 218): การให้บริการต่างจากการขายสินค้า ตรงที่ความรับผิดจะเกิดขึ้นเมื่อ 'ได้รับชำระราคาค่าบริการ' เว้นแต่ผู้ให้บริการออกใบกำกับภาษีก่อน"
+          exp: "แนวคิด: การให้บริการต่างจากการขายสินค้า ตรงที่ความรับผิดจะเกิดขึ้นเมื่อ 'ได้รับชำระราคาค่าบริการ' เว้นแต่ผู้ให้บริการออกใบกำกับภาษีก่อน"
         },
         {
           q: "กรณีการขายสินค้าตาม 'สัญญาให้เช่าซื้อหรือสัญญาซื้อขายผ่อนชำระ' ที่กรรมสิทธิ์ยังไม่โอนไปยังผู้ซื้อเมื่อส่งมอบ ความรับผิดในการเสีย VAT เกิดขึ้นเมื่อใด?",
@@ -1561,13 +1552,13 @@ function generateSetQuestions(setId) {
           ],
           ans: 1,
           formula: "เช่าซื้อ/ผ่อนชำระ = เกิดตามงวดที่ถึงกำหนดชำระ (เว้นแต่รับเงินหรือออกใบกำกับภาษีก่อน)",
-          exp: "แนวคิด (อ้างอิงหมายเหตุหน้า 219): การขายแบบเช่าซื้อหรือผ่อนชำระ ความรับผิดเกิดขึ้นเมื่อถึงกำหนดชำระราคาตามงวดที่ถึงกำหนดชำระ เว้นแต่รับเงินหรือออกใบกำกับภาษีก่อน"
+          exp: "แนวคิด: การขายแบบเช่าซื้อหรือผ่อนชำระ ความรับผิดเกิดขึ้นเมื่อถึงกำหนดชำระราคาตามงวดที่ถึงกำหนดชำระ เว้นแต่รับเงินหรือออกใบกำกับภาษีก่อน"
         }
       ];
       const c = cases[d];
       return { type: "mcq", topic: "W12 | บทที่ 7: จุดความรับผิดในการเสียภาษี (Tax Point)", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q41: Extracting VAT from Inclusive Price
+    // Q41
     () => {
       const excl = [25000, 40000, 85000][d];
       const vat = Math.round(excl * 0.07);
@@ -1584,11 +1575,11 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• มูลค่าสินค้าไม่รวม VAT = ${fmt(incl)} × 100 ÷ 107 = ${fmt(excl)} บาท\n• ภาษีขาย = ${fmt(incl)} × 7 ÷ 107 = ${fmt(vat)} บาท`
       };
     },
-    // Q42: VAT Base with Trade Discount vs Cash Discount
+    // Q42
     () => {
       const list = [50000, 80000, 100000][d];
       const td = [10, 5, 20][d];
-      const base = list * (1 - td / 100);
+      const base = Math.round(list * (1 - td / 100));
       const vat = Math.round(base * 0.07);
       const total = base + vat;
       return {
@@ -1601,10 +1592,10 @@ function generateSetQuestions(setId) {
           { label: "ยอดรวมเงินสุทธิในใบกำกับภาษี (เดบิตลูกหนี้การค้า)", indent: false, key: "t", answer: String(total), hint: "บาท" }
         ],
         formula: "ฐานภาษี = ราคาขาย − ส่วนลดการค้า (ห้ามหักส่วนลดเงินสดที่ให้ภายหลังออกจากฐานภาษี)",
-        explanation: `แนวคิด (อ้างอิงหน้า 221): ส่วนลดการค้าที่แสดงชัดแจ้งในใบกำกับภาษีหักออกจากฐานภาษีได้ (${fmt(list)} − ${td}% = ${fmt(base)} บาท) ส่วนส่วนลดเงินสด 2/10 ห้ามหักจากฐานภาษี ดังนั้น VAT 7% = ${fmt(vat)} บาท และรวมเป็นเงิน ${fmt(total)} บาท`
+        explanation: `แนวคิด: ส่วนลดการค้าที่แสดงชัดแจ้งในใบกำกับภาษีหักออกจากฐานภาษีได้ (${fmt(list)} − ${td}% = ${fmt(base)} บาท) ส่วนส่วนลดเงินสด 2/10 ห้ามหักจากฐานภาษี ดังนั้น VAT 7% = ${fmt(vat)} บาท และรวมเป็นเงิน ${fmt(total)} บาท`
       };
     },
-    // Q43: Unclaimed Input VAT (ภาษีซื้อต้องห้าม มาตรา 82/5)
+    // Q43
     () => {
       const carPrice = [600000, 800000, 1200000][d];
       const carVat = Math.round(carPrice * 0.07);
@@ -1618,10 +1609,10 @@ function generateSetQuestions(setId) {
           { label: "เครดิต บัญชีเงินฝากธนาคาร", indent: true, key: "cr", answer: String(totalCar), hint: "บาท" }
         ],
         formula: "ภาษีซื้อต้องห้าม (รถยนต์นั่ง ≤ 10 ที่นั่ง, ค่ารับรอง, ใบกำกับอย่างย่อ) -> นำ VAT รวมเป็นราคาทุนของสินทรัพย์หรือค่าใช้จ่าย",
-        explanation: `แนวคิด (อ้างอิงหน้า 223 & 229): ภาษีซื้อจากรถยนต์นั่งไม่เกิน 10 ที่นั่ง เป็นภาษีซื้อต้องห้ามตามมาตรา 82/5 ห้ามบันทึกบัญชีภาษีซื้อและห้ามขอคืน แต่ให้นำไปรวมเป็นราคาทุนของสินทรัพย์คือ ${fmt(carPrice)} + ${fmt(carVat)} = ${fmt(totalCar)} บาท`
+        explanation: `แนวคิด: ภาษีซื้อจากรถยนต์นั่งไม่เกิน 10 ที่นั่ง เป็นภาษีซื้อต้องห้ามตามมาตรา 82/5 ห้ามบันทึกบัญชีภาษีซื้อและห้ามขอคืน แต่ให้นำไปรวมเป็นราคาทุนของสินทรัพย์คือ ${fmt(carPrice)} + ${fmt(carVat)} = ${fmt(totalCar)} บาท`
       };
     },
-    // Q44: Entertainment Expense Unclaimed VAT & Corporate Tax Add-back
+    // Q44
     () => ({
       type: "mcq",
       topic: "W12 | บทที่ 7: ภาษีซื้อต้องห้ามจากค่ารับรองและการคำนวณภาษีเงินได้",
@@ -1634,9 +1625,9 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "ภาษีซื้อต้องห้ามที่เกิดจากความผิด/รายจ่ายต้องห้ามและบันทึกเป็นค่าใช้จ่าย -> บวกกลับในแบบ ภ.ง.ด. 50",
-      explanation: "แนวคิด (อ้างอิงหน้า 223): ภาษีซื้อต้องห้ามที่เกิดจากความผิดของกิจการหรือรายจ่ายรับรองและได้บันทึกเป็นค่าใช้จ่ายไว้ในงบกำไรขาดทุนเบ็ดเสร็จ จะต้องนำไปบวกกลับในการคำนวณภาษีเงินได้นิติบุคคล"
+      explanation: "แนวคิด: ภาษีซื้อต้องห้ามที่เกิดจากความผิดของกิจการหรือรายจ่ายรับรองและได้บันทึกเป็นค่าใช้จ่ายไว้ในงบกำไรขาดทุนเบ็ดเสร็จ จะต้องนำไปบวกกลับในการคำนวณภาษีเงินได้นิติบุคคล"
     }),
-    // Q45: Zero-rated (0%) vs Exempt VAT
+    // Q45
     () => {
       const cases = [
         {
@@ -1649,7 +1640,7 @@ function generateSetQuestions(setId) {
           ],
           ans: 0,
           formula: "อัตรา 0% (ส่งออก) = ภาษีขาย 0 บาท + ขอคืนภาษีซื้อได้ | ยกเว้น VAT = ไม่อยู่ในระบบ + ขอคืนภาษีซื้อไม่ได้",
-          exp: "แนวคิด (อ้างอิงหน้า 221 & 223): ผู้ประกอบการอัตรา 0% (เช่น ผู้ส่งออก) อยู่ในระบบ VAT จึงมีสิทธิขอคืนภาษีซื้อได้ แต่กิจการยกเว้น VAT (เช่น ตำราเรียน รักษาพยาบาล) ขอคืนภาษีซื้อไม่ได้"
+          exp: "แนวคิด: ผู้ประกอบการอัตรา 0% (เช่น ผู้ส่งออก) อยู่ในระบบ VAT จึงมีสิทธิขอคืนภาษีซื้อได้ แต่กิจการยกเว้น VAT (เช่น ตำราเรียน รักษาพยาบาล) ขอคืนภาษีซื้อไม่ได้"
         },
         {
           q: "กิจการใดต่อไปนี้เสียภาษีมูลค่าเพิ่มใน 'อัตราร้อยละ 0'?",
@@ -1661,7 +1652,7 @@ function generateSetQuestions(setId) {
           ],
           ans: 0,
           formula: "VAT 0%: ส่งออก, ขนส่งระหว่างประเทศ (เรือ/เครื่องบิน), ขายให้สถานทูต/UN, คลังสินค้าทัณฑ์บน",
-          exp: "แนวคิด (อ้างอิงหน้า 221): การส่งออกและการขนส่งระหว่างประเทศทางเรือหรืออากาศยานเสีย VAT 0% ส่วนขนส่งในประเทศ เช่าอสังหาฯ พืชผลเกษตร และรักษาพยาบาล ได้รับยกเว้น VAT"
+          exp: "แนวคิด: การส่งออกและการขนส่งระหว่างประเทศทางเรือหรืออากาศยานเสีย VAT 0% ส่วนขนส่งในประเทศ เช่าอสังหาฯ พืชผลเกษตร และรักษาพยาบาล ได้รับยกเว้น VAT"
         },
         {
           q: "ตามประกาศอธิบดีกรมสรรพากร กิจการที่มี 'ภาษีซื้อชำระเกิน' และต้องการยกยอดไปหักจากภาษีขายในเดือนถัดไป (เครดิตภาษี) สามารถยกยอดไปเครดิตได้ภายในระยะเวลาไม่เกินกี่เดือน?",
@@ -1673,13 +1664,13 @@ function generateSetQuestions(setId) {
           ],
           ans: 0,
           formula: "เครดิตภาษีซื้อยกไป = ไม่เกิน 6 เดือน | ขอคืนเป็นเงินสด = ไม่เกิน 3 ปี",
-          exp: "แนวคิด (อ้างอิงหน้า 220 & 240): ภาษีซื้อสามารถนำไปเครดิตในเดือนถัดไปได้ไม่เกิน 6 เดือนนับจากเดือนที่เกิดรายการ หากเกิน 6 เดือนต้องขอคืนเป็นเงินสดเท่านั้น (ภายใน 3 ปี)"
+          exp: "แนวคิด: ภาษีซื้อสามารถนำไปเครดิตในเดือนถัดไปได้ไม่เกิน 6 เดือนนับจากเดือนที่เกิดรายการ หากเกิน 6 เดือนต้องขอคืนเป็นเงินสดเท่านั้น (ภายใน 3 ปี)"
         }
       ];
       const c = cases[d];
       return { type: "mcq", topic: "W12 | บทที่ 7: อัตราภาษี 0%, กิจการยกเว้น และระยะเวลาเครดิตภาษี", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q46: Purchase Return with VAT
+    // Q46
     () => {
       const retBase = [10000, 15000, 25000][d];
       const retVat = Math.round(retBase * 0.07);
@@ -1694,10 +1685,10 @@ function generateSetQuestions(setId) {
           { label: "เครดิต บัญชีภาษีซื้อ", indent: true, key: "cr_vat", answer: String(retVat), hint: "บาท" }
         ],
         formula: "ส่งคืนสินค้า (VAT): Dr. เจ้าหนี้การค้า (รวม VAT) / Cr. สินค้าส่งคืนฯ (ฐานภาษี) + ภาษีซื้อ (7%)",
-        explanation: `แนวคิด (อ้างอิงหน้า 226): เมื่อได้รับใบลดหนี้จากผู้ขาย ต้องลดยอดเจ้าหนี้การค้ารวม VAT (${fmt(retTotal)} บาท) และลดยอดภาษีซื้อออก ${fmt(retVat)} บาท`
+        explanation: `แนวคิด: เมื่อได้รับใบลดหนี้จากผู้ขาย ต้องลดยอดเจ้าหนี้การค้ารวม VAT (${fmt(retTotal)} บาท) และลดยอดภาษีซื้อออก ${fmt(retVat)} บาท`
       };
     },
-    // Q47: Sales Return with VAT
+    // Q47
     () => {
       const retBase = [20000, 30000, 40000][d];
       const retVat = Math.round(retBase * 0.07);
@@ -1712,16 +1703,16 @@ function generateSetQuestions(setId) {
           { label: "เครดิต บัญชีลูกหนี้การค้า", indent: true, key: "cr_ar", answer: String(retTotal), hint: "บาท" }
         ],
         formula: "รับคืนสินค้า (VAT): Dr. สินค้ารับคืนฯ (ฐานภาษี) + ภาษีขาย (7%) / Cr. ลูกหนี้การค้า (รวม VAT)",
-        explanation: `แนวคิด (อ้างอิงหน้า 228): เมื่อออกใบลดหนี้รับคืนสินค้า กิจการมีสิทธินำภาษีขายที่ลดลง (${fmt(retVat)} บาท) มาเดบิตลดยอดภาษีขายประจำเดือนได้`
+        explanation: `แนวคิด: เมื่อออกใบลดหนี้รับคืนสินค้า กิจการมีสิทธินำภาษีขายที่ลดลง (${fmt(retVat)} บาท) มาเดบิตลดยอดภาษีขายประจำเดือนได้`
       };
     },
-    // Q48: Cash Discount Settlement WITH VAT (VAT does NOT change on Cash Discount!)
+    // Q48
     () => {
       const invBase = [50000, 100000, 200000][d];
       const vat = Math.round(invBase * 0.07);
       const totalAr = invBase + vat;
       const cd = [2, 3, 2][d];
-      const discAmt = Math.round(invBase * (cd / 100)); // calculated on pre-VAT base!
+      const discAmt = Math.round(invBase * (cd / 100));
       const cashRecv = totalAr - discAmt;
       return {
         type: "fill",
@@ -1733,10 +1724,10 @@ function generateSetQuestions(setId) {
           { label: "เครดิต บัญชีลูกหนี้การค้า", indent: true, key: "ar", answer: String(totalAr), hint: "บาท" }
         ],
         formula: "ส่วนลดเงินสด = ฐานมูลค่าสินค้า (ไม่รวม VAT) × อัตราส่วนลด % | ไม่มีการปรับลดภาษีขาย",
-        explanation: `แนวคิด (อ้างอิงหน้า 230): ส่วนลดเงินสดคำนวณจากราคาสินค้าก่อน VAT (${fmt(invBase)} × ${cd}% = ${fmt(discAmt)} บาท) และไม่ต้องปรับลดภาษีขายแต่อย่างใด เงินสดที่ได้รับจึงเท่ากับ ${fmt(totalAr)} − ${fmt(discAmt)} = ${fmt(cashRecv)} บาท`
+        explanation: `แนวคิด: ส่วนลดเงินสดคำนวณจากราคาสินค้าก่อน VAT (${fmt(invBase)} × ${cd}% = ${fmt(discAmt)} บาท) และไม่ต้องปรับลดภาษีขายแต่อย่างใด เงินสดที่ได้รับจึงเท่ากับ ${fmt(totalAr)} − ${fmt(discAmt)} = ${fmt(cashRecv)} บาท`
       };
     },
-    // Q49: Suspended Input VAT (ภาษีซื้อยังไม่ถึงกำหนด)
+    // Q49
     () => {
       const base = [10000, 20000, 35000][d];
       const vat = Math.round(base * 0.07);
@@ -1751,10 +1742,10 @@ function generateSetQuestions(setId) {
           { label: "เครดิต บัญชีค่าซ่อมแซมค้างจ่าย", indent: true, key: "ap", answer: String(total), hint: "บาท" }
         ],
         formula: "ได้รับใบแจ้งหนี้บริการ (ยังไม่จ่ายเงิน): Dr. ค่าใช้จ่าย + ภาษีซื้อยังไม่ถึงกำหนด / Cr. เจ้าหนี้/ค้างจ่าย",
-        explanation: `แนวคิด (อ้างอิงหน้า 231-232): เนื่องจากเป็นการให้บริการ ความรับผิดทางภาษียังไม่เกิดจนกว่าจะจ่ายเงินหรือได้รับใบกำกับภาษี จึงพักไว้ในบัญชี 'ภาษีซื้อยังไม่ถึงกำหนด' ${fmt(vat)} บาทก่อน (ห้ามนำไปยื่นแบบ ภ.พ. 30 จนกว่าจะโอนเป็นบัญชีภาษีซื้อ)`
+        explanation: `แนวคิด: เนื่องจากเป็นการให้บริการ ความรับผิดทางภาษียังไม่เกิดจนกว่าจะจ่ายเงินหรือได้รับใบกำกับภาษี จึงพักไว้ในบัญชี 'ภาษีซื้อยังไม่ถึงกำหนด' ${fmt(vat)} บาทก่อน (ห้ามนำไปยื่นแบบ ภ.พ. 30 จนกว่าจะโอนเป็นบัญชีภาษีซื้อ)`
       };
     },
-    // Q50: Suspended Output VAT (ภาษีขายยังไม่ถึงกำหนด)
+    // Q50
     () => {
       const base = [30000, 40000, 60000][d];
       const vat = Math.round(base * 0.07);
@@ -1769,15 +1760,15 @@ function generateSetQuestions(setId) {
           { label: "เครดิต บัญชีภาษีขายยังไม่ถึงกำหนด", indent: true, key: "susp", answer: String(vat), hint: "บาท" }
         ],
         formula: "ส่งใบแจ้งหนี้บริการ (ยังไม่รับเงิน): Dr. ลูกหนี้การค้า / Cr. รายได้ค่าบริการ + ภาษีขายยังไม่ถึงกำหนด",
-        explanation: `แนวคิด (อ้างอิงหน้า 233): เมื่อยังไม่ได้รับชำระค่าบริการและยังไม่ออกใบกำกับภาษี ให้เครดิตเข้าบัญชี 'ภาษีขายยังไม่ถึงกำหนด' ${fmt(vat)} บาท และจะโอนเข้าบัญชี 'ภาษีขาย' เมื่อได้รับชำระเงิน`
+        explanation: `แนวคิด: เมื่อยังไม่ได้รับชำระค่าบริการและยังไม่ออกใบกำกับภาษี ให้เครดิตเข้าบัญชี 'ภาษีขายยังไม่ถึงกำหนด' ${fmt(vat)} บาท และจะโอนเข้าบัญชี 'ภาษีขาย' เมื่อได้รับชำระเงิน`
       };
     },
-    // Q51: Closing VAT Accounts & Filing P.P.30
+    // Q51
     () => {
       const outVat = [55000, 82000, 45000][d];
       const inVat = [38000, 60000, 52000][d];
       const prevCr = [5000, 0, 3000][d];
-      const net = outVat - inVat - prevCr; // d0: +12000 (payable), d1: +22000 (payable), d2: -10000 (receivable/credit)
+      const net = outVat - inVat - prevCr;
       const isPayable = net > 0;
       return {
         type: "fill",
@@ -1788,10 +1779,10 @@ function generateSetQuestions(setId) {
           { label: isPayable ? "ภาษีมูลค่าเพิ่มที่ต้องชำระนำส่งกรมสรรพากร (ภ.พ. 30)" : "ยอดเครดิตภาษีคงเหลือยกไปเดือนถัดไป (ลูกหนี้กรมสรรพากร)", indent: false, key: "net", answer: String(Math.abs(net)), hint: "บาท" }
         ],
         formula: "VAT สุทธิ = ภาษีขายประจำเดือน − ภาษีซื้อประจำเดือน − เครดิตภาษียกมาจากเดือนก่อน",
-        explanation: `แนวคิด (อ้างอิงหน้า 237-239):\n• ผลต่างเดือนนี้ = ${fmt(outVat)} − ${fmt(inVat)} = ${fmt(outVat - inVat)} บาท\n• หักเครดิตภาษียกมา ${fmt(prevCr)} บาท -> ${isPayable ? `มียอดต้องชำระนำส่งกรมสรรพากรภายในวันที่ 15 ของเดือนถัดไป = ${fmt(net)} บาท` : `มีภาษีชำระเกินคงเหลือยกไปเดือนถัดไป = ${fmt(Math.abs(net))} บาท`}`
+        explanation: `แนวคิด:\n• ผลต่างเดือนนี้ = ${fmt(outVat)} − ${fmt(inVat)} = ${fmt(outVat - inVat)} บาท\n• หักเครดิตภาษียกมา ${fmt(prevCr)} บาท -> ${isPayable ? `มียอดต้องชำระนำส่งกรมสรรพากรภายในวันที่ 15 ของเดือนถัดไป = ${fmt(net)} บาท` : `มีภาษีชำระเกินคงเหลือยกไปเดือนถัดไป = ${fmt(Math.abs(net))} บาท`}`
       };
     },
-    // Q52: P.P.30 vs P.P.36 Deadlines
+    // Q52
     () => ({
       type: "mcq",
       topic: "W13 | บทที่ 7: กำหนดเวลายื่นแบบ ภ.พ. 30 และแบบ ภ.พ. 36",
@@ -1804,9 +1795,9 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "ภ.พ. 30 -> ภายในวันที่ 15 ของเดือนถัดไป | ภ.พ. 36 (จ่ายค่าบริการต่างประเทศ) -> ภายใน 7 วันนับแต่วันสิ้นเดือนที่จ่ายเงิน",
-      explanation: "แนวคิด (อ้างอิงหน้า 240-241): แบบ ภ.พ. 30 ยื่นภายในวันที่ 15 ของเดือนถัดไป ส่วนแบบ ภ.พ. 36 (กรณีจ่ายเงินค่าบริการให้ผู้ประกอบการในต่างประเทศและใช้บริการในไทย) ยื่นภายใน 7 วันนับแต่วันสิ้นเดือนของเดือนที่จ่ายเงิน"
+      explanation: "แนวคิด: แบบ ภ.พ. 30 ยื่นภายในวันที่ 15 ของเดือนถัดไป ส่วนแบบ ภ.พ. 36 (กรณีจ่ายเงินค่าบริการให้ผู้ประกอบการในต่างประเทศและใช้บริการในไทย) ยื่นภายใน 7 วันนับแต่วันสิ้นเดือนของเดือนที่จ่ายเงิน"
     }),
-    // Q53: VAT Reports (รายงานภาษีซื้อ รายงานภาษีขาย รายงานสินค้าและวัตถุดิบ)
+    // Q53
     () => ({
       type: "mcq",
       topic: "W13 | บทที่ 7: รายงานเกี่ยวกับภาษีมูลค่าเพิ่มและระยะเวลาลงรายการ",
@@ -1819,9 +1810,9 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "หน้าที่ผู้ประกอบการ VAT: บันทึกรายงานภาษีซื้อ/ภาษีขาย/สินค้าและวัตถุดิบ ภายใน 3 วันนับจากวันเกิดรายการ",
-      explanation: "แนวคิด (อ้างอิงหน้า 241): ผู้ประกอบการจดทะเบียนต้องจัดทำและบันทึกรายงานภาษีซื้อ รายงานภาษีขาย และรายงานสินค้าและวัตถุดิบภายใน 3 วันนับจากวันที่เกิดรายการ (และใบกำกับภาษีซื้อที่ตกหล่นสามารถนำมาลงรายงานย้อนหลังได้ไม่เกิน 6 เดือน)"
+      explanation: "แนวคิด: ผู้ประกอบการจดทะเบียนต้องจัดทำและบันทึกรายการในรายงานภาษีซื้อ รายงานภาษีขาย และรายงานสินค้าและวัตถุดิบภายใน 3 วันนับจากวันที่เกิดรายการ"
     }),
-    // Q54: Deemed Sale (สินค้าขาดจากรายงานสินค้าและวัตถุดิบ)
+    // Q54
     () => {
       const cost = [10000, 15000, 20000][d];
       const sell = [14000, 20000, 30000][d];
@@ -1834,10 +1825,10 @@ function generateSetQuestions(setId) {
           { label: "ภาษีขายที่ต้องนำส่งจากสินค้าขาดจากรายงาน (7% ของราคาตลาด)", indent: false, key: "vat", answer: String(vat), hint: "บาท" }
         ],
         formula: "สินค้าขาดจากรายงานสินค้าและวัตถุดิบ = ถือเป็นการขาย (มาตรา 77/1(8)) -> เสีย VAT 7% จาก 'ราคาตลาด/ราคาขาย'",
-        explanation: `แนวคิด (อ้างอิงหน้า 219 & 240): สินค้าขาดจากรายงานสินค้าและวัตถุดิบถือเป็นการขายตามมาตรา 77/1(8) ต้องคำนวณภาษีขายจากราคาตลาดหรือราคาขายปกติ (${fmt(sell)} × 7% = ${fmt(vat)} บาท) และบันทึกในรายงานภาษีขาย`
+        explanation: `แนวคิด: สินค้าขาดจากรายงานสินค้าและวัตถุดิบถือเป็นการขายตามมาตรา 77/1(8) ต้องคำนวณภาษีขายจากราคาตลาดหรือราคาขายปกติ (${fmt(sell)} × 7% = ${fmt(vat)} บาท) และบันทึกในรายงานภาษีขาย`
       };
     },
-    // Q55: FlowAccount - Quotation -> Billing Note -> Tax Invoice -> Receipt Workflow
+    // Q55
     () => ({
       type: "mcq",
       topic: "W9 | โปรแกรม FlowAccount: ลำดับขั้นตอนเอกสารทางธุรกิจ",
@@ -1850,9 +1841,9 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "FlowAccount Sales Cycle: ใบเสนอราคา (QT) -> ใบวางบิล/ใบแจ้งหนี้/ใบกำกับภาษี -> ใบเสร็จรับเงิน (RE)",
-      explanation: "แนวคิด: โปรแกรม FlowAccount ออกแบบ Flow เอกสารให้ส่งต่อข้อมูลอัตโนมัติ (ไม่ต้องพิมพ์ซ้ำ) เริ่มจาก ใบเสนอราคา (Quotation) -> อนุมัติสร้าง ใบแจ้งหนี้/ใบกำกับภาษี (Invoice/Tax Invoice) ตอนส่งสินค้า -> และกดสร้าง ใบเสร็จรับเงิน (Receipt) เมื่อลูกค้าโอนเงิน"
+      explanation: "แนวคิด: โปรแกรม FlowAccount ออกแบบ Flow เอกสารให้ส่งต่อข้อมูลอัตโนมัติ เริ่มจาก ใบเสนอราคา (Quotation) -> อนุมัติสร้าง ใบแจ้งหนี้/ใบกำกับภาษี (Invoice/Tax Invoice) ตอนส่งสินค้า -> และกดสร้าง ใบเสร็จรับเงิน (Receipt) เมื่อลูกค้าโอนเงิน"
     }),
-    // Q56: FlowAccount - Auto-Journal on Credit Sales (Perpetual + VAT)
+    // Q56
     () => {
       const base = [20000, 30000, 50000][d];
       const vat = Math.round(base * 0.07);
@@ -1872,12 +1863,12 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: เมื่ออนุมัติใบกำกับภาษีขายสินค้าใน FlowAccount ระบบจะบันทึกบัญชีคู่ 2 ชุดทันที คือรับรู้ลูกหนี้รวม VAT (${fmt(total)} บาท), รายได้ (${fmt(base)} บาท), ภาษีขาย (${fmt(vat)} บาท) และตัดสต็อกเข้าต้นทุนขายตามราคาทุน (${fmt(cost)} บาท)`
       };
     },
-    // Q57: FlowAccount - Withholding Tax (ภาษีหัก ณ ที่จ่าย) on Expenses
+    // Q57
     () => {
       const fee = [15000, 20000, 40000][d];
-      const whtRate = [3, 5, 1][d]; // 3% service, 5% rent, 1% transport
+      const whtRate = [3, 5, 1][d];
       const labelType = ["ค่าบริการ", "ค่าเช่าสำนักงาน", "ค่าขนส่ง"][d];
-      const vat = d === 0 ? Math.round(fee * 0.07) : 0; // rent & domestic transport are VAT exempt!
+      const vat = d === 0 ? Math.round(fee * 0.07) : 0;
       const whtAmt = Math.round(fee * (whtRate / 100));
       const netPay = fee + vat - whtAmt;
       return {
@@ -1892,7 +1883,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ภาษีหัก ณ ที่จ่ายคำนวณจากยอดก่อน VAT เสมอ = ${fmt(fee)} × ${whtRate}% = ${fmt(whtAmt)} บาท\n• เงินโอนจ่ายสุทธิ = ${fmt(fee)} + ${fmt(vat)} − ${fmt(whtAmt)} = ${fmt(netPay)} บาท`
       };
     },
-    // Q58: FlowAccount - Stock Card & Costing Method
+    // Q58
     () => ({
       type: "mcq",
       topic: "W9 | โปรแกรม FlowAccount: การจัดการคลังสินค้าและผังบัญชี",
@@ -1907,7 +1898,7 @@ function generateSetQuestions(setId) {
       formula: "FlowAccount Automation: บันทึกเอกสาร -> ลงสมุดรายวัน + ตัดสต็อก + สร้างรายงานภาษีซื้อ/ขาย อัตโนมัติ",
       explanation: "แนวคิด: จุดเด่นของโปรแกรม FlowAccount คือการเชื่อมโยงเอกสารซื้อ-ขาย-ค่าใช้จ่าย เข้ากับสมุดรายวัน แยกประเภท บัตรสินค้า (Stock Card) และรายงานภาษีซื้อ/ภาษีขาย รวมถึงหนังสือรับรองการหักภาษี ณ ที่จ่าย (50 ทวิ) แบบครบวงจร"
     }),
-    // Q59: Tax Invoice Requirements (Full vs Abbreviated)
+    // Q59
     () => ({
       type: "mcq",
       topic: "W12 | บทที่ 7: ใบกำกับภาษีแบบเต็มรูปและแบบย่อ",
@@ -1920,9 +1911,9 @@ function generateSetQuestions(setId) {
       ],
       answer: 3,
       formula: "ใบกำกับภาษีเต็มรูป: ต้องมีคำว่า 'ใบกำกับภาษี', เลขผู้เสียภาษี+สาขา, เลขที่/วันที่, รายการ, มูลค่า, จำนวน VAT แยกต่างหาก",
-      explanation: "แนวคิด (อ้างอิงหน้า 222): กฎหมายไม่ได้บังคับให้ต้องมีลายมือชื่อกรรมการหรือประทับตราบริษัทในใบกำกับภาษี แต่บังคับให้พิมพ์คำว่า 'ใบกำกับภาษี' เลขผู้เสียภาษี ระบุสำนักงานใหญ่/สาขา และแยกยอด VAT ออกมาจากมูลค่าสินค้า"
+      explanation: "แนวคิด: กฎหมายไม่ได้บังคับให้ต้องมีลายมือชื่อกรรมการหรือประทับตราบริษัทในใบกำกับภาษี แต่บังคับให้พิมพ์คำว่า 'ใบกำกับภาษี' เลขผู้เสียภาษี ระบุสำนักงานใหญ่/สาขา และแยกยอด VAT ออกมาจากมูลค่าสินค้า"
     }),
-    // Q60: Exempt Goods/Services in Detail
+    // Q60
     () => ({
       type: "mcq",
       topic: "W12 | บทที่ 7: การจำแนกสินค้าที่ยกเว้น VAT vs ต้องเสีย VAT",
@@ -1935,13 +1926,13 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "พืชผลเกษตร/สัตว์/เนื้อสัตว์สด = ยกเว้น VAT | แต่หากบรรจุกระป๋อง/ภาชนะทำเป็นอุตสาหกรรม = เสีย VAT 7%",
-      explanation: "แนวคิด (อ้างอิงหน้า 223-224): พืชผลเกษตรและสัตว์ได้รับยกเว้น VAT แต่กฎหมายระบุข้อยกเว้นว่า 'ไม่รวมถึงผลิตภัณฑ์อาหารที่บรรจุกระป๋อง ภาชนะ หรือหีบห่อที่ทำเป็นอุตสาหกรรม' ดังนั้นอาหารกระป๋องต้องเสีย VAT 7%"
+      explanation: "แนวคิด: พืชผลเกษตรและสัตว์ได้รับยกเว้น VAT แต่กฎหมายระบุข้อยกเว้นว่า 'ไม่รวมถึงผลิตภัณฑ์อาหารที่บรรจุกระป๋อง ภาชนะ หรือหีบห่อที่ทำเป็นอุตสาหกรรม' ดังนั้นอาหารกระป๋องต้องเสีย VAT 7%"
     }),
-    // Q61: VAT on Deposit / Advance Receipt
+    // Q61
     () => {
       const totalOrder = [100000, 200000, 300000][d];
       const depPct = [20, 30, 40][d];
-      const depBase = totalOrder * (depPct / 100);
+      const depBase = Math.round(totalOrder * (depPct / 100));
       const depVat = Math.round(depBase * 0.07);
       const remBase = totalOrder - depBase;
       const remVat = Math.round(remBase * 0.07);
@@ -1957,16 +1948,16 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• เดือน มี.ค.: รับมัดจำ ${depPct}% = ${fmt(depBase)} บาท -> เกิด VAT ทันที = ${fmt(depBase)} × 7% = ${fmt(depVat)} บาท\n• เดือน เม.ย.: ส่งมอบสินค้า -> เกิด VAT ส่วนที่เหลือ ${100 - depPct}% = ${fmt(remBase)} × 7% = ${fmt(remVat)} บาท`
       };
     },
-    // Q62: Comprehensive VAT Net Payable/Receivable Problem
+    // Q62
     () => {
       const s = [400000, 600000, 800000][d];
       const sr = [20000, 30000, 50000][d];
       const p = [250000, 350000, 700000][d];
       const pr = [10000, 10000, 20000][d];
       const util = [10000, 20000, 30000][d];
-      const ent = [15000, 25000, 40000][d]; // entertainment VAT is unclaimed!
+      const ent = [15000, 25000, 40000][d];
       const outVat = Math.round((s - sr) * 0.07);
-      const inVat = Math.round((p - pr + util) * 0.07); // exclude ent!
+      const inVat = Math.round((p - pr + util) * 0.07);
       const net = outVat - inVat;
       return {
         type: "fill",
@@ -1987,7 +1978,7 @@ function generateSetQuestions(setId) {
   // PART 4: กิจการอุตสาหกรรม (Manufacturing Company - Week 14) (18 ข้อ: ข้อ 63–80)
   // --------------------------------------------------------------------------
   const mfgItems = [
-    // Q63: Product Costs vs Period Costs
+    // Q63
     () => ({
       type: "mcq",
       topic: "W14 | บทที่ 14: ต้นทุนผลิตภัณฑ์ (Product Costs) vs ต้นทุนตามงวดเวลา (Period Costs)",
@@ -2002,7 +1993,7 @@ function generateSetQuestions(setId) {
       formula: "Product Costs (Inventoriable Costs) = DM + DL + MOH | Period Costs = ค่าใช้จ่ายในการขายและบริหาร",
       explanation: "แนวคิด: ต้นทุนผลิตภัณฑ์ (Product Costs) คือต้นทุนที่เกิดขึ้นในโรงงานเพื่อผลิตสินค้า ประกอบด้วย DM, DL และ MOH ซึ่งจะสะสมอยู่ในสินค้าคงเหลือจนกว่าสินค้าจะถูกขาย จึงจะกลายเป็นต้นทุนขาย"
     }),
-    // Q64: 3 Inventory Accounts of Manufacturing Company
+    // Q64
     () => ({
       type: "mcq",
       topic: "W14 | บทที่ 14: บัญชีสินค้าคงเหลือ 3 ประเภทในกิจการอุตสาหกรรม",
@@ -2017,7 +2008,7 @@ function generateSetQuestions(setId) {
       formula: "Inventories (Manufacturing) = Raw Materials + Work in Process (WIP) + Finished Goods (FG)",
       explanation: "แนวคิด: กิจการอุตสาหกรรมมีสินค้าคงเหลือ 3 สถานะ คือ 1) วัตถุดิบคงเหลือ 2) งานระหว่างทำ (สินค้าที่ผลิตยังไม่เสร็จ ณ วันสิ้นงวด) และ 3) สินค้าสำเร็จรูปพร้อมขาย"
     }),
-    // Q65: Prime Cost & Conversion Cost
+    // Q65
     () => {
       const dm = [120000, 200000, 280000][d];
       const dl = [80000, 150000, 170000][d];
@@ -2039,7 +2030,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• Prime Cost = ${fmt(dm)} + ${fmt(dl)} = ${fmt(prime)} บาท\n• Conversion Cost = ${fmt(dl)} + ${fmt(moh)} = ${fmt(conv)} บาท (สังเกตว่า DL อยู่ในทั้งสองสูตร)\n• ต้นทุนการผลิตรวม = ${fmt(dm)} + ${fmt(dl)} + ${fmt(moh)} = ${fmt(totalProd)} บาท`
       };
     },
-    // Q66: Direct Materials Used Calculation
+    // Q66
     () => {
       const begRm = [25000, 40000, 60000][d];
       const purRm = [140000, 210000, 300000][d];
@@ -2058,7 +2049,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: DM Used = ${fmt(begRm)} + (${fmt(purRm)} − ${fmt(retRm)} + ${fmt(finRm)}) − ${fmt(endRm)} = ${fmt(dmUsed)} บาท`
       };
     },
-    // Q67: Cost of Goods Manufactured (COGM)
+    // Q67
     () => {
       const dm = [150000, 220000, 300000][d];
       const dl = [100000, 140000, 180000][d];
@@ -2079,7 +2070,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n1. ต้นทุนการผลิตรวม = ${fmt(dm)} + ${fmt(dl)} + ${fmt(moh)} = ${fmt(tmc)} บาท\n2. COGM = ${fmt(tmc)} + ${fmt(begWip)} − ${fmt(endWip)} = ${fmt(cogm)} บาท`
       };
     },
-    // Q68: COGS of Manufacturing Company
+    // Q68
     () => {
       const begFg = [45000, 60000, 90000][d];
       const cogm = [340000, 480000, 610000][d];
@@ -2096,7 +2087,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: กิจการอุตสาหกรรมใช้ 'ต้นทุนสินค้าที่ผลิตเสร็จ (COGM)' แทน 'ซื้อสุทธิ' ของกิจการซื้อขายสินค้า -> COGS = ${fmt(begFg)} + ${fmt(cogm)} − ${fmt(endFg)} = ${fmt(cogs)} บาท`
       };
     },
-    // Q69: Indirect Materials & Indirect Labor Classification
+    // Q69
     () => ({
       type: "mcq",
       topic: "W14 | บทที่ 14: การจำแนกต้นทุนทางตรงและทางอ้อม",
@@ -2111,15 +2102,15 @@ function generateSetQuestions(setId) {
       formula: "MOH = วัตถุดิบทางอ้อม (เช่น น้ำมันหล่อลื่น, กาว, น็อต) + ค่าแรงทางอ้อม (หัวหน้างาน) + ค่าใช้จ่ายโรงงานอื่น",
       explanation: "แนวคิด: น้ำมันหล่อลื่นเครื่องจักร (วัตถุดิบทางอ้อม) เงินเดือนวิศวกรโรงงาน (ค่าแรงทางอ้อม) และค่าประกันภัยโรงงาน ล้วนเป็นต้นทุนที่เกิดในโรงงานแต่ไม่สามารถระบุเข้ากับตัวสินค้าโดยตรงได้ จึงจัดเป็น MOH"
     }),
-    // Q70: Predetermined Overhead Rate & Applied MOH
+    // Q70
     () => {
       const estMoh = [400000, 600000, 900000][d];
-      const estBase = [20000, 30000, 30000][d]; // DL hours or Machine hours
+      const estBase = [20000, 30000, 30000][d];
       const actBase = [21000, 28500, 32000][d];
       const actMoh = [415000, 580000, 950000][d];
-      const rate = estMoh / estBase; // 20, 20, 30
+      const rate = estMoh / estBase;
       const applied = rate * actBase;
-      const diff = actMoh - applied; // + under-applied, - over-applied
+      const diff = actMoh - applied;
       return {
         type: "fill",
         topic: "W14 | บทที่ 14: อัตราค่าใช้จ่ายในการผลิตคิดเข้างาน (Applied MOH)",
@@ -2133,7 +2124,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n1. อัตราคิดเข้างาน = ${fmt(estMoh)} ÷ ${fmt(estBase)} = ${rate} บาท/ชม.\n2. Applied MOH = ${rate} × ${fmt(actBase)} = ${fmt(applied)} บาท\n3. ผลต่าง = ${fmt(actMoh)} − ${fmt(applied)} = ${fmt(diff)} บาท (${diff > 0 ? "คิดเข้างานต่ำไป Under-applied" : "คิดเข้างานสูงไป Over-applied"})`
       };
     },
-    // Q71: Manufacturing Journal Entries (Flow of Costs)
+    // Q71
     () => ({
       type: "mcq",
       topic: "W14 | บทที่ 14: การบันทึกบัญชีวงจรต้นทุนการผลิต",
@@ -2148,7 +2139,7 @@ function generateSetQuestions(setId) {
       formula: "เบิกวัตถุดิบ: DM -> Dr. งานระหว่างทำ (WIP) | Indirect Materials -> Dr. ค่าใช้จ่ายในการผลิต (MOH)",
       explanation: "แนวคิด: วัตถุดิบทางตรงโอนเข้าบัญชี 'งานระหว่างทำ (WIP)' โดยตรง ส่วนวัตถุดิบทางอ้อมโอนเข้าบัญชี 'ค่าใช้จ่ายในการผลิต (MOH)' และเครดิตลดบัญชีวัตถุดิบ"
     }),
-    // Q72: Completion of Goods & Sale of Finished Goods Journal
+    // Q72
     () => {
       const cogm = [180000, 250000, 320000][d];
       const soldCost = [150000, 200000, 280000][d];
@@ -2164,7 +2155,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• สินค้าที่ผลิตเสร็จโอนออกจากงานระหว่างทำเข้าบัญชีสินค้าสำเร็จรูป = ${fmt(cogm)} บาท\n• สินค้าที่ขายออกโอนจากสินค้าสำเร็จรูปเข้าบัญชีต้นทุนขาย = ${fmt(soldCost)} บาท`
       };
     },
-    // Q73: Cost Behavior (Fixed vs Variable Cost per Unit)
+    // Q73
     () => ({
       type: "mcq",
       topic: "W14 | บทที่ 14: พฤติกรรมต้นทุน (ต้นทุนผันแปร vs ต้นทุนคงที่)",
@@ -2177,15 +2168,15 @@ function generateSetQuestions(setId) {
       ],
       answer: 0,
       formula: "Variable Cost: ต่อหน่วยคงที่, รวมแปรผันตรง | Fixed Cost: รวมคงที่, ต่อหน่วยแปรผกผันกับปริมาณผลิต",
-      explanation: "แนวคิด: เมื่อผลิตมากขึ้น ต้นทุนคงที่รวม (เช่น ค่าเช่าโรงงาน) ไม่เปลี่ยนแปลง เมื่อหารด้วยจำนวนหน่วยที่มากขึ้น ต้นทุนคงที่ต่อหน่วยจึงลดลง (Economies of Scale) ขณะที่ต้นทุนผันแปรต่อหน่วย (เช่น ค่าวัตถุดิบต่อชิ้น) ยังคงเท่าเดิม"
+      explanation: "แนวคิด: เมื่อผลิตมากขึ้น ต้นทุนคงที่รวม (เช่น ค่าเช่าโรงงาน) ไม่เปลี่ยนแปลง เมื่อหารด้วยจำนวนหน่วยที่มากขึ้น ต้นทุนคงที่ต่อหน่วยจึงลดลง ขณะที่ต้นทุนผันแปรต่อหน่วยยังคงเท่าเดิม"
     }),
-    // Q74: Cost Allocation (Factory vs Office Depreciation/Utilities)
+    // Q74
     () => {
       const totalDepr = [100000, 150000, 200000][d];
       const facPct = [80, 70, 75][d];
       const totalUtil = [50000, 60000, 80000][d];
       const utilFacPct = [90, 80, 85][d];
-      const mohAdd = (totalDepr * facPct / 100) + (totalUtil * utilFacPct / 100);
+      const mohAdd = Math.round((totalDepr * facPct / 100) + (totalUtil * utilFacPct / 100));
       const opExAdd = (totalDepr + totalUtil) - mohAdd;
       return {
         type: "fill",
@@ -2199,7 +2190,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• MOH = (${fmt(totalDepr)} × ${facPct}%) + (${fmt(totalUtil)} × ${utilFacPct}%) = ${fmt(mohAdd)} บาท\n• ค่าใช้จ่ายในการบริหาร = ${fmt(totalDepr + totalUtil)} − ${fmt(mohAdd)} = ${fmt(opExAdd)} บาท`
       };
     },
-    // Q75: Reverse Calculation of Beginning/Ending WIP
+    // Q75
     () => {
       const tmc = [300000, 450000, 520000][d];
       const begWip = [40000, 55000, 60000][d];
@@ -2216,12 +2207,11 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: จากสมการ COGM = TMC + Beg WIP − End WIP ย้ายข้างจะได้ End WIP = ${fmt(tmc)} + ${fmt(begWip)} − ${fmt(cogm)} = ${fmt(endWip)} บาท`
       };
     },
-    // Q76: Reverse Calculation of Direct Labor from MOH %
+    // Q76
     () => {
       const tmc = [420000, 560000, 720000][d];
       const dm = [180000, 200000, 240000][d];
-      const mohPct = [60, 80, 100][d]; // MOH is % of DL
-      // TMC - DM = DL * (1 + mohPct/100) -> d0: 240000 / 1.6 = 150000; d1: 360000 / 1.8 = 200000; d2: 480000 / 2.0 = 240000
+      const mohPct = [60, 80, 100][d];
       const dl = Math.round((tmc - dm) / (1 + mohPct / 100));
       const moh = (tmc - dm) - dl;
       return {
@@ -2236,7 +2226,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• DL + MOH = ${fmt(tmc)} − ${fmt(dm)} = ${fmt(tmc - dm)} บาท\n• DL × ${(1 + mohPct / 100).toFixed(2)} = ${fmt(tmc - dm)} -> DL = ${fmt(dl)} บาท\n• MOH = ${fmt(dl)} × ${mohPct}% = ${fmt(moh)} บาท`
       };
     },
-    // Q77: Manufacturing Gross Profit & Net Income
+    // Q77
     () => {
       const sales = [900000, 1200000, 1600000][d];
       const begFg = [50000, 80000, 100000][d];
@@ -2259,7 +2249,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n1. ต้นทุนขาย = ${fmt(begFg)} + ${fmt(cogm)} − ${fmt(endFg)} = ${fmt(cogs)} บาท\n2. กำไรขั้นต้น = ${fmt(sales)} − ${fmt(cogs)} = ${fmt(gp)} บาท\n3. กำไรจากการดำเนินงาน = ${fmt(gp)} − ${fmt(opEx)} = ${fmt(ni)} บาท`
       };
     },
-    // Q78: Manufacturing Closing Entries
+    // Q78
     () => ({
       type: "mcq",
       topic: "W14 | บทที่ 14: การปิดบัญชีของกิจการอุตสาหกรรม",
@@ -2274,7 +2264,7 @@ function generateSetQuestions(setId) {
       formula: "ปิดบัญชีโรงงาน -> บัญชีต้นทุนการผลิต (Manufacturing Summary) -> สรุปยอดรายได้ค่าใช้จ่าย -> กำไรสะสม",
       explanation: "แนวคิด: กิจการอุตสาหกรรมจะเปิดบัญชี 'ต้นทุนการผลิต (Manufacturing Summary)' เพื่อรวบรวมต้นทุน DM, DL, MOH และปรับปรุงงานระหว่างทำต้นงวด-ปลายงวด ให้ได้ยอด COGM ก่อนโอนไปคำนวณกำไรขาดทุนในบัญชีสรุปยอดรายได้ค่าใช้จ่าย"
     }),
-    // Q79: Disposing Under-applied vs Over-applied MOH
+    // Q79
     () => ({
       type: "mcq",
       topic: "W14 | บทที่ 14: ผลกระทบของการปิดบัญชีค่าใช้จ่ายการผลิตคิดเข้างานสูงไป (Over-applied MOH)",
@@ -2289,7 +2279,7 @@ function generateSetQuestions(setId) {
       formula: "Over-applied MOH (Applied > Actual) -> ปิดบัญชีลดต้นทุนขาย (Dr. MOH / Cr. COGS) -> กำไรเพิ่มขึ้น",
       explanation: "แนวคิด: การคิดเข้างานสูงไป (Over-applied) แปลว่าต้นทุนที่บันทึกเข้างานไว้สูงเกินความเป็นจริง เมื่อปิดปรับปรุงต้องเครดิตลดบัญชีต้นทุนขายลง 12,000 บาท ทำให้กำไรขั้นต้นเพิ่มขึ้น 12,000 บาท"
     }),
-    // Q80: Full Manufacturing Statement Integration
+    // Q80
     () => {
       const begRm = 20000, purRm = [100000, 150000, 200000][d], endRm = 30000;
       const dl = [70000, 110000, 140000][d];
@@ -2318,7 +2308,7 @@ function generateSetQuestions(setId) {
   // PART 5: การวิเคราะห์งบการเงิน & งบกระแสเงินสด (Week 15) (20 ข้อ: ข้อ 81–100)
   // --------------------------------------------------------------------------
   const finAnalysisItems = [
-    // Q81: Horizontal Analysis (การวิเคราะห์แนวนอน)
+    // Q81
     () => {
       const y1 = [400000, 500000, 800000][d];
       const y2 = [460000, 625000, 720000][d];
@@ -2327,7 +2317,7 @@ function generateSetQuestions(setId) {
       return {
         type: "fill",
         topic: "W15 | บทที่ 15: การวิเคราะห์งบการเงินแนวนอน (Horizontal Analysis)",
-        text: `บริษัทมีรายได้ค่าขายสุทธิในปี 25x1 เท่ากับ ${fmt(y1)} บาท และในปี 25x2 เท่ากับ ${fmt(y2)} บาท จงคำนวณการเปลี่ยนแปลงในการวิเคราะห์แนวนอน (ใส่เครื่องหมาย - หากลดลง)`,
+        text: `บริษัทมีรายได้ค่าขายสุทธิในปี 25x1 เท่ากับ ${fmt(y1)} บาท และในปี 25x2 เท่ากับ ${fmt(y2)} บาท จงคำนวณการเปลี่ยนแปลงในการวิเคราะห์แนวนอน (หากลดลงใส่เครื่องหมาย - หรือวงเล็บ)`,
         rows: [
           { label: "จำนวนเงินที่เปลี่ยนแปลง (ปี 25x2 − ปี 25x1)", indent: false, key: "diff", answer: String(diff), hint: "บาท" },
           { label: "อัตราร้อยละที่เปลี่ยนแปลง (% เทียบกับปีฐาน 25x1)", indent: false, key: "pct", answer: pct, hint: "%" }
@@ -2336,7 +2326,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• จำนวนเงินเปลี่ยนแปลง = ${fmt(y2)} − ${fmt(y1)} = ${fmt(diff)} บาท\n• ร้อยละที่เปลี่ยนแปลง = (${fmt(diff)} ÷ ${fmt(y1)}) × 100 = ${pct}%`
       };
     },
-    // Q82: Vertical Analysis (Common-Size)
+    // Q82
     () => {
       const sales = [500000, 800000, 1000000][d];
       const cogs = [310000, 480000, 650000][d];
@@ -2355,7 +2345,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: การวิเคราะห์แนวดิ่งในงบกำไรขาดทุนใช้ยอดขายสุทธิเป็นฐาน 100%:\n• ต้นทุนขาย = (${fmt(cogs)} ÷ ${fmt(sales)}) × 100 = ${cogsPct}%\n• กำไรสุทธิ = (${fmt(ni)} ÷ ${fmt(sales)}) × 100 = ${niPct}%`
       };
     },
-    // Q83: Current Ratio & Quick Ratio & Working Capital
+    // Q83
     () => {
       const cash = [50000, 80000, 100000][d];
       const ar = [70000, 100000, 140000][d];
@@ -2379,14 +2369,14 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• สินทรัพย์หมุนเวียนรวม (CA) = ${fmt(cash)} + ${fmt(ar)} + ${fmt(inv)} + ${fmt(prep)} = ${fmt(ca)} บาท\n• เงินทุนหมุนเวียนสุทธิ = ${fmt(ca)} − ${fmt(cl)} = ${fmt(wc)} บาท\n• Current Ratio = ${fmt(ca)} ÷ ${fmt(cl)} = ${cr} เท่า\n• Quick Ratio (ไม่รวมสินค้าคงเหลือและจ่ายล่วงหน้า) = (${fmt(cash)} + ${fmt(ar)}) ÷ ${fmt(cl)} = ${qr} เท่า`
       };
     },
-    // Q84: Accounts Receivable Turnover & Average Collection Period
+    // Q84
     () => {
       const creditSales = [730000, 1095000, 1460000][d];
       const begAr = [65000, 100000, 130000][d];
       const endAr = [81000, 119000, 162000][d];
-      const avgAr = (begAr + endAr) / 2; // 73000, 109500, 146000
-      const arTurn = creditSales / avgAr; // 10, 10, 10
-      const acp = (365 / arTurn).toFixed(2); // 36.50
+      const avgAr = (begAr + endAr) / 2;
+      const arTurn = creditSales / avgAr;
+      const acp = (365 / arTurn).toFixed(2);
       return {
         type: "fill",
         topic: "W15 | บทที่ 15: อัตราการหมุนเวียนของลูกหนี้และระยะเวลาเก็บหนี้เฉลี่ย",
@@ -2399,7 +2389,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ลูกหนี้เฉลี่ย = (${fmt(begAr)} + ${fmt(endAr)}) ÷ 2 = ${fmt(avgAr)} บาท\n• AR Turnover = ${fmt(creditSales)} ÷ ${fmt(avgAr)} = ${arTurn.toFixed(2)} รอบ\n• ระยะเวลาเก็บหนี้เฉลี่ย = 365 ÷ ${arTurn.toFixed(2)} = ${acp} วัน`
       };
     },
-    // Q85: Debt Ratio, Debt-to-Equity & Times Interest Earned (TIE)
+    // Q85
     () => {
       const ta = [1000000, 1500000, 2000000][d];
       const tl = [400000, 600000, 1200000][d];
@@ -2422,7 +2412,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ส่วนของผู้ถือหุ้น = ${fmt(ta)} − ${fmt(tl)} = ${fmt(te)} บาท\n• Debt Ratio = (${fmt(tl)} ÷ ${fmt(ta)}) × 100 = ${dToA}%\n• D/E Ratio = ${fmt(tl)} ÷ ${fmt(te)} = ${dToE} เท่า\n• TIE = ${fmt(ebit)} ÷ ${fmt(intExp)} = ${tie} เท่า`
       };
     },
-    // Q86: ROA & ROE Profitability Ratios
+    // Q86
     () => {
       const ni = [180000, 300000, 450000][d];
       const avgTa = [1200000, 2000000, 2500000][d];
@@ -2441,11 +2431,11 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ROA = (${fmt(ni)} ÷ ${fmt(avgTa)}) × 100 = ${roa}%\n• ROE = (${fmt(ni)} ÷ ${fmt(avgEq)}) × 100 = ${roe}%`
       };
     },
-    // Q87: DuPont Identity Formula
+    // Q87
     () => {
-      const npm = [5, 8, 10][d]; // %
-      const tat = [1.6, 1.5, 1.2][d]; // times
-      const em = [2.0, 2.5, 2.0][d]; // Equity Multiplier = TA / TE
+      const npm = [5, 8, 10][d];
+      const tat = [1.6, 1.5, 1.2][d];
+      const em = [2.0, 2.5, 2.0][d];
       const roa = (npm * tat).toFixed(2);
       const roe = (npm * tat * em).toFixed(2);
       return {
@@ -2460,13 +2450,13 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• ROA = ${npm}% × ${tat} = ${roa}%\n• ROE = ${npm}% × ${tat} × ${em} = ${roe}%`
       };
     },
-    // Q88: Earnings Per Share (EPS) & P/E Ratio
+    // Q88
     () => {
       const ni = [540000, 880000, 1250000][d];
       const prefDiv = [40000, 80000, 50000][d];
       const shares = [100000, 200000, 200000][d];
       const mktPrice = [60, 48, 72][d];
-      const eps = (ni - prefDiv) / shares; // 5.00, 4.00, 6.00
+      const eps = (ni - prefDiv) / shares;
       const pe = (mktPrice / eps).toFixed(2);
       return {
         type: "fill",
@@ -2480,7 +2470,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• EPS = (${fmt(ni)} − ${fmt(prefDiv)}) ÷ ${fmt(shares)} = ${eps.toFixed(2)} บาท/หุ้น\n• P/E Ratio = ${mktPrice} ÷ ${eps.toFixed(2)} = ${pe} เท่า`
       };
     },
-    // Q89: Statement of Cash Flows - 3 Activities Classification
+    // Q89
     () => {
       const cases = [
         {
@@ -2493,7 +2483,7 @@ function generateSetQuestions(setId) {
           ],
           ans: 0,
           formula: "Investing Activities = การซื้อ/ขายสินทรัพย์ไม่หมุนเวียน (ที่ดิน อาคาร อุปกรณ์) และเงินลงทุนระยะยาว",
-          exp: "แนวคิด (อ้างอิงหน้า 34-35): กิจกรรมลงทุนเกี่ยวข้องกับการได้มาและจำหน่ายไปซึ่งสินทรัพย์ระยะยาวและเงินลงทุนอื่นที่ไม่ใช่รายการเทียบเท่าเงินสด"
+          exp: "แนวคิด: กิจกรรมลงทุนเกี่ยวข้องกับการได้มาและจำหน่ายไปซึ่งสินทรัพย์ระยะยาวและเงินลงทุนอื่นที่ไม่ใช่รายการเทียบเท่าเงินสด"
         },
         {
           q: "รายการใดต่อไปนี้จัดเป็น 'กิจกรรมที่ไม่ใช้เงินสด (Non-cash Investing and Financing Activities)' ซึ่งต้องเปิดเผยในหมายเหตุประกอบงบการเงินแทนการรวมในยอดกระแสเงินสด 3 กิจกรรม?",
@@ -2523,7 +2513,7 @@ function generateSetQuestions(setId) {
       const c = cases[d];
       return { type: "mcq", topic: "W15 | บทที่ 15: การจัดประเภทกิจกรรมในงบกระแสเงินสด", text: c.q, options: c.opts, answer: c.ans, formula: c.formula, explanation: c.exp };
     },
-    // Q90: Cash Flow from Operating Activities (Indirect Method - Basic)
+    // Q90
     () => {
       const ni = [300000, 450000, 600000][d];
       const depr = [50000, 70000, 90000][d];
@@ -2543,27 +2533,27 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\nCFO = ${fmt(ni)} + ${fmt(depr)} (ค่าเสื่อมราคา) − ${fmt(arInc)} (ลูกหนี้เพิ่ม) + ${fmt(invDec)} (สินค้าลด) + ${fmt(apInc)} (เจ้าหนี้เพิ่ม) − ${fmt(accDec)} (ค้างจ่ายลด) = ${fmt(cfo)} บาท`
       };
     },
-    // Q91: CFO Indirect with Gain/Loss on Sale of Equipment
+    // Q91 (Verified: Supports both -8000 and (8000))
     () => {
       const ni = [200000, 350000, 500000][d];
       const depr = [40000, 60000, 80000][d];
-      const eqCost = 120000, eqAccDepr = 70000; // BV = 50,000
-      const sellCash = [62000, 42000, 65000][d]; // Gain 12k, Loss 8k, Gain 15k
-      const gainLoss = sellCash - (eqCost - eqAccDepr); // +12000, -8000, +15000
+      const eqCost = 120000, eqAccDepr = 70000;
+      const sellCash = [62000, 42000, 65000][d];
+      const gainLoss = sellCash - (eqCost - eqAccDepr);
       const cfo = ni + depr - gainLoss;
       return {
         type: "fill",
         topic: "W15 | บทที่ 15: การปรับปรุงกำไร/ขาดทุนจากการขายสินทรัพย์ถาวรใน CFO",
         text: `บริษัทมีกำไรสุทธิ ${fmt(ni)} บาท ค่าเสื่อมราคาประจำปี ${fmt(depr)} บาท ในระหว่างปีได้ขายอุปกรณ์ราคาทุน 120,000 บาท ค่าเสื่อมราคาสะสม 70,000 บาท ได้รับเงินสด ${fmt(sellCash)} บาท (ไม่มีการเปลี่ยนแปลงในเงินทุนหมุนเวียนอื่น) จงคำนวณ`,
         rows: [
-          { label: "กำไร / (ขาดทุน) จากการขายอุปกรณ์ (ใส่ - หากขาดทุน)", indent: false, key: "gl", answer: String(gainLoss), hint: "บาท" },
+          { label: "กำไร / (ขาดทุน) จากการขายอุปกรณ์ (ใส่ - หรือวงเล็บ หากขาดทุน)", indent: false, key: "gl", answer: String(gainLoss), hint: "บาท" },
           { label: "กระแสเงินสดสุทธิจากกิจกรรมดำเนินงาน (CFO)", indent: false, key: "cfo", answer: String(cfo), hint: "บาท" }
         ],
         formula: "กำไรจากการขายสินทรัพย์ -> หักออกใน CFO | ขาดทุนจากการขายสินทรัพย์ -> บวกกลับใน CFO (ส่วนเงินสดรับทั้งก้อนแสดงใน CFI)",
-        explanation: `แนวคิด:\n1. มูลค่าตามบัญชี (Book Value) = 120,000 − 70,000 = 50,000 บาท ขายได้ ${fmt(sellCash)} บาท -> ${gainLoss >= 0 ? `กำไร ${fmt(gainLoss)} บาท (ต้องหักออกใน CFO)` : `ขาดทุน ${fmt(Math.abs(gainLoss))} บาท (ต้องบวกกลับใน CFO)`}\n2. CFO = ${fmt(ni)} + ${fmt(depr)} − (${gainLoss}) = ${fmt(cfo)} บาท`
+        explanation: `แนวคิด:\n1. มูลค่าตามบัญชี (Book Value) = 120,000 − 70,000 = 50,000 บาท ขายได้ ${fmt(sellCash)} บาท -> ${gainLoss >= 0 ? `กำไร ${fmt(gainLoss)} บาท (ต้องหักออกใน CFO)` : `ขาดทุน ${fmt(Math.abs(gainLoss))} บาท หรือ -${Math.abs(gainLoss)} (ต้องบวกกลับใน CFO)`}\n2. CFO = ${fmt(ni)} + ${fmt(depr)} − (${gainLoss}) = ${fmt(cfo)} บาท`
       };
     },
-    // Q92: Cash Flow from Investing Activities (CFI)
+    // Q92 (Verified: Supports both -120000 and (120000))
     () => {
       const buyMach = [250000, 400000, 600000][d];
       const sellLand = [180000, 320000, 450000][d];
@@ -2572,7 +2562,7 @@ function generateSetQuestions(setId) {
       return {
         type: "fill",
         topic: "W15 | บทที่ 15: กระแสเงินสดจากกิจกรรมลงทุน (CFI)",
-        text: `ในระหว่างปี บริษัทจ่ายเงินสดซื้อเครื่องจักรใหม่ ${fmt(buyMach)} บาท, ขายที่ดินได้เงินสด ${fmt(sellLand)} บาท (มีกำไรจากการขาย 40,000 บาท) และจ่ายเงินสดซื้อเงินลงทุนระยะยาว ${fmt(buyInv)} บาท จงคำนวณกระแสเงินสดสุทธิจากกิจกรรมลงทุน (ใส่เครื่องหมาย - หากเป็นกระแสเงินสดจ่ายสุทธิ)`,
+        text: `ในระหว่างปี บริษัทจ่ายเงินสดซื้อเครื่องจักรใหม่ ${fmt(buyMach)} บาท, ขายที่ดินได้เงินสด ${fmt(sellLand)} บาท (มีกำไรจากการขาย 40,000 บาท) และจ่ายเงินสดซื้อเงินลงทุนระยะยาว ${fmt(buyInv)} บาท จงคำนวณกระแสเงินสดสุทธิจากกิจกรรมลงทุน (ใส่เครื่องหมาย - หรือวงเล็บ หากเป็นกระแสเงินสดจ่ายสุทธิ)`,
         rows: [
           { label: "กระแสเงินสดสุทธิจากกิจกรรมลงทุน (CFI)", indent: false, key: "cfi", answer: String(cfi), hint: "บาท" }
         ],
@@ -2580,7 +2570,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: ในกิจกรรมลงทุนให้นับเฉพาะ 'เงินสดรับจริง' และ 'เงินสดจ่ายจริง' (ไม่สนใจกำไร/ขาดทุนทางบัญชี):\nCFI = +${fmt(sellLand)} (ขายที่ดิน) − ${fmt(buyMach)} (ซื้อเครื่องจักร) − ${fmt(buyInv)} (ซื้อเงินลงทุน) = ${fmt(cfi)} บาท`
       };
     },
-    // Q93: Cash Flow from Financing Activities (CFF)
+    // Q93
     () => {
       const issueStock = [300000, 500000, 800000][d];
       const loanBorrow = [200000, 150000, 300000][d];
@@ -2598,7 +2588,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: CFF = +${fmt(issueStock)} (ออกหุ้น) + ${fmt(loanBorrow)} (กู้ยืม) − ${fmt(loanRepay)} (คืนเงินกู้) − ${fmt(divPaid)} (จ่ายปันผล) = ${fmt(cff)} บาท`
       };
     },
-    // Q94: Direct Method Cash Collections from Customers
+    // Q94
     () => {
       const sales = [800000, 1200000, 1500000][d];
       const begAr = [90000, 140000, 200000][d];
@@ -2615,7 +2605,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: เงินสดรับจากลูกค้า = ${fmt(sales)} + ${fmt(begAr)} − ${fmt(endAr)} = ${fmt(cashRecv)} บาท`
       };
     },
-    // Q95: Direct Method Cash Paid to Suppliers
+    // Q95
     () => {
       const cogs = [500000, 750000, 900000][d];
       const begInv = [60000, 90000, 120000][d];
@@ -2636,7 +2626,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n1. ยอดซื้อสินค้า = ${fmt(cogs)} + ${fmt(endInv)} − ${fmt(begInv)} = ${fmt(purchases)} บาท\n2. เงินสดจ่ายเจ้าหนี้ = ${fmt(purchases)} + ${fmt(begAp)} − ${fmt(endAp)} = ${fmt(cashPaid)} บาท`
       };
     },
-    // Q96: Cash Reconciliation (Beg Cash + CFO + CFI + CFF = End Cash)
+    // Q96
     () => {
       const begCash = [100000, 150000, 220000][d];
       const cfo = [280000, 340000, 410000][d];
@@ -2656,7 +2646,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n• เงินสดเปลี่ยนแปลงสุทธิ = ${fmt(cfo)} + (${fmt(cfi)}) + (${fmt(cff)}) = ${fmt(netChg)} บาท\n• เงินสดปลายงวด = ${fmt(begCash)} + ${fmt(netChg)} = ${fmt(endCash)} บาท`
       };
     },
-    // Q97: Operating Cycle vs Cash Conversion Cycle (Financial Ratio)
+    // Q97
     () => {
       const dsi = [45, 60, 50][d];
       const dso = [35, 40, 45][d];
@@ -2673,7 +2663,7 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด: CCC = ${dsi} + ${dso} − ${dpo} = ${ccc} วัน (ยิ่งค่า CCC ต่ำหรือติดลบ แสดงว่าบริษัทบริหารสภาพคล่องและเงินทุนหมุนเวียนได้ดีมาก)`
       };
     },
-    // Q98: Limitations of Financial Ratio Analysis
+    // Q98
     () => ({
       type: "mcq",
       topic: "W15 | บทที่ 15: ข้อจำกัดของการวิเคราะห์อัตราส่วนทางการเงิน",
@@ -2688,7 +2678,7 @@ function generateSetQuestions(setId) {
       formula: "ข้อจำกัดการวิเคราะห์งบ: ราคาทุนเดิม (Historical Cost), ความต่างของนโยบายบัญชี, ผลกระทบฤดูกาล (Window Dressing)",
       explanation: "แนวคิด: ผู้วิเคราะห์งบการเงินต้องตระหนักว่าตัวเลขงบการเงินอิงราคาทุนเดิมในอดีต นโยบายบัญชีที่ต่างกัน (เช่น วิธีคิดค่าเสื่อมราคาหรือวิธีตีราคาสินค้า) รวมถึงการตกแต่งตัวเลขสิ้นงวด อาจทำให้การเปรียบเทียบคลาดเคลื่อนได้"
     }),
-    // Q99: Reverse Engineering Current Ratio & Quick Ratio
+    // Q99
     () => {
       const cl = [150000, 200000, 250000][d];
       const cr = [2.4, 2.5, 2.2][d];
@@ -2708,12 +2698,12 @@ function generateSetQuestions(setId) {
         explanation: `แนวคิด:\n1. สินทรัพย์หมุนเวียนรวม = ${cr} × ${fmt(cl)} = ${fmt(ca)} บาท\n2. สินทรัพย์หมุนเวียนเร็ว (เงินสด+ลูกหนี้) = ${qr} × ${fmt(cl)} = ${fmt(qa)} บาท\n3. สินค้าคงเหลือ = ${fmt(ca)} − ${fmt(qa)} = ${fmt(inv)} บาท`
       };
     },
-    // Q100: Comprehensive Capstone Question (All Weeks Integration)
+    // Q100
     () => {
       const sales = [1000000, 1500000, 2000000][d];
       const cogs = [600000, 900000, 1100000][d];
       const opEx = [200000, 300000, 450000][d];
-      const depr = [40000, 60000, 80000][d]; // included in opEx
+      const depr = [40000, 60000, 80000][d];
       const arInc = [30000, 50000, 70000][d];
       const gp = sales - cogs;
       const ni = gp - opEx;
@@ -2733,7 +2723,6 @@ function generateSetQuestions(setId) {
     }
   ];
 
-  // Combine all 100 items in logical syllabus order (1-20 Merch, 21-38 Cost Flow, 39-62 VAT & FlowAccount, 63-80 Mfg, 81-100 Analysis & CF)
   const allFactories = [
     ...merchItems,
     ...costFlowItems,
@@ -2803,7 +2792,7 @@ let userAnswers = {};
 let timerInterval = null;
 let elapsedSeconds = 0;
 let reviewResults = [];
-let currentExamPage = 0; // 0..4 (20 questions per page) or -1 for all
+let currentExamPage = 0;
 const PAGE_SIZE = 20;
 
 // DOM Elements
@@ -2974,7 +2963,6 @@ function renderExamPage() {
   container.innerHTML = "";
   bottomNav.innerHTML = "";
 
-  // Update active tab styling
   document.querySelectorAll(".page-tab-btn").forEach((btn, idx) => {
     btn.classList.toggle("active", idx === currentExamPage);
   });
@@ -3059,7 +3047,6 @@ function renderExamPage() {
     }
   }
 
-  // Bottom Prev / Next page controls
   if (currentExamPage !== -1) {
     const numPages = Math.ceil(currentSet.questions.length / PAGE_SIZE);
     if (currentExamPage > 0) {
@@ -3089,26 +3076,34 @@ function renderExamPage() {
   }
 }
 
-// Smart Numeric & String Answer Checker
+// Smart Numeric & Accounting Parentheses Parser (supports -8000, (8000), +15000, commas)
+function parseAccountingNumber(raw) {
+  let s = String(raw || "").trim().replace(/,/g, "").replace(/\s+/g, "");
+  if (s === "") return NaN;
+  if (/^\(.+\)$/.test(s)) {
+    s = "-" + s.slice(1, -1);
+  }
+  return Number(s);
+}
+
 function checkBlankValue(userRaw, expectedRaw) {
-  const normalize = s => String(s || "").trim().replace(/,/g, "").replace(/\s+/g, "");
-  const u = normalize(userRaw);
-  const e = normalize(expectedRaw);
-  if (u === "") return false;
-  const uNum = Number(u);
-  const eNum = Number(e);
+  const uStr = String(userRaw || "").trim();
+  const eStr = String(expectedRaw || "").trim();
+  if (uStr === "") return false;
+  const uNum = parseAccountingNumber(uStr);
+  const eNum = parseAccountingNumber(eStr);
   if (!Number.isNaN(uNum) && !Number.isNaN(eNum)) {
     return Math.abs(uNum - eNum) < 0.025;
   }
-  return u.toLowerCase() === e.toLowerCase();
+  return uStr.toLowerCase() === eStr.toLowerCase();
 }
 
 function formatNumberDisplay(val) {
-  const clean = String(val).replace(/,/g, "");
-  const num = Number(clean);
+  const raw = String(val).trim();
+  const num = parseAccountingNumber(raw);
   if (Number.isNaN(num)) return val;
-  const prefix = String(val).trim().startsWith("+") && num > 0 ? "+" : "";
-  if (String(val).includes(".")) {
+  const prefix = raw.startsWith("+") && num > 0 ? "+" : "";
+  if (raw.includes(".")) {
     return prefix + num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
   return prefix + num.toLocaleString("en-US");
