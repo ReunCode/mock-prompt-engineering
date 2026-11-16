@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ระบบคลังข้อสอบจำลอง การบัญชีขั้นต้น (Weeks 9–15 & FlowAccount)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #2563eb;
+      --primary-bg: #eff6ff;
+      --accent: #d97706;
+      --accent-bg: #fffbeb;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --success: #059669;
+      --success-bg: #ecfdf5;
+      --surface: #ffffff;
+      --bg: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --border: #cbd5e1;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Sarabun', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    .header-inner {
+      max-width: 1040px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand-badge {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+    .brand h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    /* Timer & Live Status Bar */
+    .exam-hud {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.12);
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+    }
+    .hud-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .timer-display {
+      font-variant-numeric: tabular-nums;
+      color: #fde68a;
+      font-size: 1.05rem;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1040px;
+      margin: 1.75rem auto;
+      padding: 0 1rem 3rem;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Cards & Buttons */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 0.98rem;
+      padding: 0.65rem 1.35rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--primary-light); color: #fff; }
+    .btn-primary:hover { background: var(--primary); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover { background: #047857; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-outline {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: #f8fafc; border-color: #94a3b8; }
+    .btn-outline.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Set Selection Grid */
+    .intro-banner {
+      margin-bottom: 1.5rem;
+      border-left: 5px solid var(--primary-light);
+    }
+    .intro-banner h2 { margin: 0 0 0.4rem; color: var(--primary); }
+    .intro-banner p { margin: 0; color: var(--text-muted); }
+
+    .sets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+    .set-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .set-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.12);
+      border-color: var(--primary-light);
+    }
+    .set-card.selected {
+      border: 2px solid var(--primary-light);
+      background: #f8faff;
+    }
+    .set-card.hard-set {
+      border-top: 4px solid var(--danger);
+    }
+    .difficulty-badge {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      margin-bottom: 0.65rem;
+    }
+    .diff-std { background: var(--primary-bg); color: var(--primary-light); }
+    .diff-mid { background: var(--accent-bg); color: var(--accent); }
+    .diff-hard { background: var(--danger-bg); color: var(--danger); }
+
+    .set-card h3 { margin: 0 0 0.5rem; font-size: 1.2rem; }
+    .set-topics {
+      margin: 0.5rem 0 1rem;
+      padding-left: 1.2rem;
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+    .set-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      border-top: 1px solid #e2e8f0;
+      padding-top: 0.75rem;
+      margin-top: auto;
+    }
+
+    /* Ready / Pre-start Box */
+    .prestart-box {
+      margin-top: 1.5rem;
+      text-align: center;
+      background: linear-gradient(to bottom, #ffffff, #f8fafc);
+      border: 2px dashed var(--primary-light);
+    }
+    .prestart-box h3 { margin-top: 0; color: var(--primary); }
+
+    /* Question Styling */
+    .question-card {
+      margin-bottom: 1.35rem;
+      transition: border-color 0.2s;
+    }
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .q-number {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.05rem;
+    }
+    .q-tag {
+      font-size: 0.78rem;
+      background: #e2e8f0;
+      color: #334155;
+      padding: 0.18rem 0.55rem;
+      border-radius: 6px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .q-text {
+      font-size: 1.02rem;
+      margin-bottom: 1rem;
+      white-space: pre-line;
+    }
+
+    /* MCQ Options */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .option-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: #fff;
+    }
+    .option-label:hover {
+      background: #f8fafc;
+      border-color: var(--primary-light);
+    }
+    .option-label input[type="radio"] {
+      margin-top: 0.28rem;
+      accent-color: var(--primary-light);
+      transform: scale(1.15);
+    }
+    .option-label.chosen {
+      background: var(--primary-bg);
+      border-color: var(--primary-light);
+      font-weight: 500;
+    }
+
+    /* Accounting Fill-in-the-blank Table */
+    .acc-table-wrap {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+    }
+    .acc-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+    .acc-table th, .acc-table td {
+      border: 1px solid #cbd5e1;
+      padding: 0.6rem 0.85rem;
+    }
+    .acc-table th {
+      background: #f1f5f9;
+      color: #1e293b;
+      font-weight: 700;
+      text-align: left;
+    }
+    .acc-table th.num-col, .acc-table td.num-col {
+      text-align: right;
+      width: 210px;
+    }
+    .indent-cr { padding-left: 2.2rem !important; }
+    .blank-input {
+      width: 100%;
+      max-width: 185px;
+      padding: 0.42rem 0.6rem;
+      font-family: 'Sarabun', sans-serif;
+      font-size: 0.98rem;
+      font-weight: 600;
+      text-align: right;
+      border: 2px solid #94a3b8;
+      border-radius: 6px;
+      background: #fffbeb;
+      color: #0f172a;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .blank-input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      background: #ffffff;
+    }
+
+    /* Review Mode Styles */
+    .review-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-box {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat-val {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+    .stat-lbl {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      padding: 1rem 1.25rem;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 68px;
+      z-index: 90;
+    }
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .q-correct-card { border-left: 5px solid var(--success); }
+    .q-wrong-card { border-left: 5px solid var(--danger); }
+
+    .status-pill {
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+    }
+    .pill-pass { background: var(--success-bg); color: var(--success); }
+    .pill-fail { background: var(--danger-bg); color: var(--danger); }
+
+    .opt-review-correct {
+      background: var(--success-bg) !important;
+      border-color: var(--success) !important;
+      color: #065f46;
+      font-weight: 600;
+    }
+    .opt-review-wrong {
+      background: var(--danger-bg) !important;
+      border-color: var(--danger) !important;
+      color: #991b1b;
+    }
+
+    .blank-review-box {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.2rem;
+    }
+    .ans-user-ok {
+      background: var(--success-bg);
+      color: #065f46;
+      border: 1.5px solid var(--success);
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+    .ans-user-bad {
+      background: var(--danger-bg);
+      color: #991b1b;
+      border: 1.5px solid var(--danger);
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-weight: 700;
+      text-decoration: line-through;
+    }
+    .ans-expected {
+      font-size: 0.85rem;
+      color: var(--success);
+      font-weight: 700;
+    }
+
+    .explanation-box {
+      margin-top: 1rem;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 1rem 1.15rem;
+      font-size: 0.95rem;
+    }
+    .explanation-title {
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.35rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .navigator-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+    .nav-dot {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .nav-dot.answered {
+      background: var(--primary-bg);
+      border-color: var(--primary-light);
+      color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-badge">2601113</span>
+      <h1>คลังข้อสอบจำลอง การบัญชีขั้นต้น (Weeks 9–15 & FlowAccount)</h1>
+    </div>
+    <div id="examHud" class="exam-hud hidden">
+      <div class="hud-item">
+        <span>ชุดที่:</span>
+        <span id="hudSetName">-</span>
+      </div>
+      <div class="hud-item">
+        <span>ทำแล้ว:</span>
+        <span id="hudProgress">0/0</span>
+      </div>
+      <div class="hud-item">
+        <span>⏱ เวลา:</span>
+        <span id="timerDisplay" class="timer-display">00:00:00</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- VIEW 1: SET SELECTION -->
+  <section id="viewSelect">
+    <div class="card intro-banner">
+      <h2>ยินดีต้อนรับค่ะ นายท่าน</h2>
+      <p>กรุณาเลือกชุดข้อสอบที่ต้องการฝึกฝน ด้านล่างมีให้เลือก 3 ชุด ครอบคลุมเนื้อหาสัปดาห์ที่ 9–15 (กิจการซื้อขายสินค้า Periodic/Perpetual, Cost Flow TAS 2, ภาษีมูลค่าเพิ่ม VAT, โปรแกรม FlowAccount, กิจการอุตสาหกรรม และวิเคราะห์งบการเงิน/งบกระแสเงินสด) โดยระบบจะ<strong>เริ่มจับเวลาเมื่อนายท่านกดปุ่ม "เริ่มทำข้อสอบ"</strong> ค่ะ</p>
+    </div>
+
+    <div class="sets-grid" id="setsGrid"></div>
+
+    <div id="prestartPanel" class="card prestart-box hidden">
+      <h3 id="selectedSetTitle">ชุดที่ 1</h3>
+      <p id="selectedSetDesc" style="color: var(--text-muted); max-width: 680px; margin: 0 auto 1.25rem;"></p>
+      <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+        <button id="btnStartExam" class="btn btn-primary" style="font-size: 1.08rem; padding: 0.8rem 2rem;">
+          ▶ เริ่มทำข้อสอบ (เริ่มจับเวลาทันที)
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 2: EXAM TAKING -->
+  <section id="viewExam" class="hidden">
+    <div class="card" style="margin-bottom: 1.25rem; padding: 1rem 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.65rem;">
+        <strong style="color: var(--primary);">แผนผังข้อสอบ (คลิกเพื่อเลื่อนไปยังข้อนั้น)</strong>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">*สำหรับช่องเติมตัวเลข สามารถพิมพ์มีลูกน้ำ (เช่น 45,000) หรือไม่มีลูกน้ำ (45000) ก็ได้ค่ะ</span>
+      </div>
+      <div id="questionNavigator" class="navigator-grid"></div>
+    </div>
+
+    <div id="questionsContainer"></div>
+
+    <div class="card" style="text-align: center; margin-top: 1.5rem; border-top: 4px solid var(--success);">
+      <h3 style="margin-top: 0;">ตรวจสอบความเรียบร้อยก่อนส่งคำตอบ</h3>
+      <p id="submitSummaryHint" style="color: var(--text-muted); margin-bottom: 1.2rem;"></p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button id="btnCancelExam" class="btn btn-outline">ยกเลิกและกลับหน้าเลือกชุด</button>
+        <button id="btnSubmitExam" class="btn btn-success" style="font-size: 1.08rem; padding: 0.8rem 2.2rem;">
+          ✔ ส่งคำตอบและดูเฉลยละเอียด
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 3: RESULTS & DETAILED REVIEW -->
+  <section id="viewReview" class="hidden">
+    <div class="card" style="margin-bottom: 1.25rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
+        <h2 style="margin: 0; color: var(--primary);">สรุปผลคะแนนและเฉลยละเอียด</h2>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button id="btnRetrySet" class="btn btn-outline">↻ ทำชุดนี้ใหม่อีกครั้ง</button>
+          <button id="btnBackHome" class="btn btn-primary">⌂ เลือกชุดข้อสอบอื่น</button>
+        </div>
+      </div>
+
+      <div class="review-summary">
+        <div class="stat-box">
+          <div id="resScore" class="stat-val">0 / 0</div>
+          <div class="stat-lbl">คะแนนรวม (จุดคำตอบ)</div>
+        </div>
+        <div class="stat-box">
+          <div id="resPercent" class="stat-val">0%</div>
+          <div class="stat-lbl">คิดเป็นร้อยละ</div>
+        </div>
+        <div class="stat-box">
+          <div id="resQPass" class="stat-val" style="color: var(--success);">0 / 0</div>
+          <div class="stat-lbl">จำนวนข้อใหญ่ที่ถูกสมบูรณ์</div>
+        </div>
+        <div class="stat-box">
+          <div id="resTime" class="stat-val" style="color: var(--accent);">00:00</div>
+          <div class="stat-lbl">เวลาที่ใช้ทำข้อสอบ</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <button class="btn btn-outline active" data-filter="all">แสดงทุกข้อ (<span id="cntAll">0</span>)</button>
+        <button class="btn btn-outline" data-filter="wrong" style="border-color: var(--danger); color: var(--danger);">
+          ✖ กรองเฉพาะข้อที่ทำผิด (<span id="cntWrong">0</span>)
+        </button>
+        <button class="btn btn-outline" data-filter="correct">✔ แสดงเฉพาะข้อที่ทำถูก (<span id="cntCorrect">0</span>)</button>
+      </div>
+      <div id="filterStatusText" style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;"></div>
+    </div>
+
+    <div id="reviewContainer"></div>
+  </section>
+
+</main>
+
+<script>
+const EXAM_SETS = [
+  {
+    id: 1,
+    title: "ชุดที่ 1: วงจรการบัญชีซื้อขายสินค้า & ภาษีมูลค่าเพิ่ม (VAT)",
+    level: "ระดับมาตรฐาน (สัปดาห์ที่ 9, 12–13)",
+    badgeClass: "diff-std",
+    description: "เน้นหลักการบันทึกบัญชี Periodic และ Perpetual, เงื่อนไขการส่งมอบ Incoterms (FOB/CFR/CIF), ส่วนลดการค้าและส่วนลดเงินสด, การคำนวณภาษีซื้อ-ภาษีขาย, ภาษีซื้อต้องห้าม และการปิดบัญชีภาษีมูลค่าเพิ่ม",
+    topics: [
+      "กิจการซื้อขายสินค้า (Periodic & Perpetual)",
+      "Incoterms, ค่าขนส่งจ่ายแทน และส่วนลดเงินสด",
+      "ภาษีมูลค่าเพิ่ม (VAT), ภาษีซื้อต้องห้าม, ภ.พ.30"
+    ],
+    questions: [
+      {
+        id: "s1q1",
+        type: "mcq",
+        topic: "บทที่ 6: เงื่อนไข Incoterms",
+        text: "ในการสั่งซื้อสินค้าระหว่างประเทศภายใต้เงื่อนไข CFR (Cost and Freight) ข้อใดกล่าวถึงภาระค่าใช้จ่ายและความเสี่ยงภัยได้ถูกต้องตามตำรา?",
+        options: [
+          "ผู้ขายจ่ายค่าระวางเรือ และรับผิดชอบความเสี่ยงภัยจนสินค้าถึงท่าเรือปลายทาง",
+          "ผู้ขายจ่ายค่าระวางเรือ แต่ความเสี่ยงภัยและค่าประกันภัยเป็นของผู้ซื้อทันทีที่สินค้าข้ามกาบเรือ ณ ท่าเรือต้นทาง",
+          "ผู้ซื้อจ่ายค่าระวางเรือเองทั้งหมด และความเสี่ยงภัยโอนเป็นของผู้ซื้อเมื่อสินค้าถึงคลังสินค้าผู้ซื้อ",
+          "ผู้ขายจ่ายทั้งค่าระวางเรือและค่าประกันภัยขนส่งสินค้าจนถึงท่าเรือปลายทาง"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: ตามเงื่อนไข CFR (เดิมใช้ C&F) ผู้ขายจะสิ้นสุดภาระการส่งมอบเมื่อสินค้าข้ามกาบเรือ ณ ท่าเรือต้นทาง โดยผู้ขายเป็นผู้ทำพิธีการส่งออกและจ่ายค่าระวางเรือให้ แต่ความเสี่ยงภัยและค่าประกันภัยขนส่งสินค้าตกเป็นภาระของผู้ซื้อทันทีที่ของผ่านกาบระวางเรือไปแล้ว (หากผู้ขายจ่ายประกันภัยด้วยจะเรียกว่า CIF)"
+      },
+      {
+        id: "s1q2",
+        type: "mcq",
+        topic: "บทที่ 6: ส่วนลดเงินสดและต้นทุนค่าเสียโอกาส",
+        text: "กิจการซื้อสินค้าเป็นเงินเชื่อเงื่อนไข 3/10, n/40 หากกิจการตัดสินใจไม่ชำระเงินภายใน 10 วันเพื่อรับส่วนลด แต่ไปชำระในวันที่ 40 จะคิดเป็นอัตราดอกเบี้ยเสียโอกาสต่อปีเท่าใด (กำหนดให้ 1 ปี มี 365 วัน)?",
+        options: [
+          "27.38% ต่อปี",
+          "36.50% ต่อปี",
+          "30.00% ต่อปี",
+          "109.50% ต่อปี"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: การไม่รับส่วนลด 3/10, n/40 เท่ากับกิจการยอมเสียส่วนลด 3% เพื่อยืดระยะเวลาชำระเงินออกไปอีก 30 วัน (40 - 10 วัน)\nสูตรคำนวณ: 3% × (365 / 30) = 36.50% ต่อปี ซึ่งสูงกว่าอัตราดอกเบี้ยเงินกู้ธนาคารทั่วไปมาก กิจการจึงควรรับส่วนลดนี้"
+      },
+      {
+        id: "s1q3",
+        type: "fill",
+        topic: "บทที่ 6: การบันทึกบัญชีระบบ Perpetual",
+        text: "บริษัท ก จำกัด ใช้ระบบบัญชีสินค้าต่อเนื่อง (Perpetual Inventory System) วันที่ 1 มี.ค. ซื้อสินค้าเชื่อ 50,000 บาท เงื่อนไข 2/10, n/30 วันที่ 4 มี.ค. ส่งคืนสินค้าชำรุด 5,000 บาท วันที่ 9 มี.ค. จ่ายชำระหนี้ทั้งหมด (ยังไม่คำนึงถึง VAT) จงเติมตัวเลขในสมุดรายวันทั่วไป ณ วันที่ 9 มี.ค.",
+        rows: [
+          { label: "เดบิต บัญชีเจ้าหนี้การค้า", indent: false, key: "dr_ap", answer: "45000", hint: "บาท" },
+          { label: "เครดิต บัญชีสินค้าคงเหลือ (ส่วนลดรับ)", indent: true, key: "cr_inv", answer: "900", hint: "บาท" },
+          { label: "เครดิต บัญชีเงินสด", indent: true, key: "cr_cash", answer: "44100", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n1. ยอดเจ้าหนี้คงเหลือหลังส่งคืน = 50,000 - 5,000 = 45,000 บาท\n2. ชำระวันที่ 9 มี.ค. (ภายใน 10 วัน) ได้รับส่วนลด 2% = 45,000 × 2% = 900 บาท ในระบบ Perpetual จะนำส่วนลดรับไปลดยอดบัญชี 'สินค้าคงเหลือ' โดยตรง (ไม่ใช้บัญชีส่วนลดรับ)\n3. จ่ายเงินสดสุทธิ = 45,000 - 900 = 44,100 บาท"
+      },
+      {
+        id: "s1q4",
+        type: "mcq",
+        topic: "บทที่ 6: การบันทึกค่าขนส่งจ่ายแทน",
+        text: "กิจการขายสินค้าเป็นเงินเชื่อ 30,000 บาท เงื่อนไข F.O.B. Shipping Point และกิจการ (ผู้ขาย) ได้จ่ายค่าขนส่งสินค้าแทนผู้ซื้อไปก่อนเป็นเงินสด 1,200 บาท ผู้ขายจะบันทึกรายการค่าขนส่งนี้อย่างไร?",
+        options: [
+          "เดบิต ค่าขนส่งเมื่อขาย 1,200 / เครดิต เงินสด 1,200",
+          "เดบิต ลูกหนี้การค้า 1,200 / เครดิต เงินสด 1,200",
+          "เดบิต สินค้าคงเหลือ 1,200 / เครดิต เงินสด 1,200",
+          "ผู้ขายไม่ต้องบันทึกรายการใด ๆ ทั้งสิ้น"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: เงื่อนไข F.O.B. Shipping Point ผู้ซื้อเป็นผู้รับผิดชอบค่าขนส่ง เมื่อผู้ขายออกเงินสดจ่ายแทนไปก่อน ผู้ขายจึงมีสิทธิเรียกเก็บเงินเพิ่มจากผู้ซื้อ โดยบันทึก เดบิต ลูกหนี้การค้า 1,200 / เครดิต เงินสด 1,200"
+      },
+      {
+        id: "s1q5",
+        type: "fill",
+        topic: "บทที่ 6: การคำนวณต้นทุนขาย (Periodic)",
+        text: "ข้อมูลของกิจการที่ใช้ระบบสินค้าสิ้นงวด (Periodic): สินค้าคงเหลือต้นงวด 40,000 บาท, ซื้อ 200,000 บาท, สินค้าส่งคืนและส่วนลด 8,000 บาท, ส่วนลดรับ 4,000 บาท, ค่าขนส่งเมื่อซื้อ 6,000 บาท, ค่าขนส่งเมื่อขาย 5,000 บาท และสินค้าคงเหลือปลายงวด 35,000 บาท จงเติมตัวเลขให้ถูกต้อง",
+        rows: [
+          { label: "ซื้อสุทธิ (Net Purchases)", indent: false, key: "net_pur", answer: "188000", hint: "บาท" },
+          { label: "ต้นทุนซื้อสุทธิ (Net Cost of Purchases)", indent: false, key: "net_cost_pur", answer: "194000", hint: "บาท" },
+          { label: "ต้นทุนขาย (Cost of Goods Sold)", indent: false, key: "cogs", answer: "199000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n• ซื้อสุทธิ = ซื้อ (200,000) - ส่งคืน (8,000) - ส่วนลดรับ (4,000) = 188,000 บาท\n• ต้นทุนซื้อสุทธิ = ซื้อสุทธิ (188,000) + ค่าขนส่งเมื่อซื้อ (6,000) = 194,000 บาท\n• ต้นทุนขาย = สินค้าต้นงวด (40,000) + ต้นทุนซื้อสุทธิ (194,000) - สินค้าปลายงวด (35,000) = 199,000 บาท\n(*ค่าขนส่งเมื่อขาย 5,000 บาท เป็นค่าใช้จ่ายในการขาย ไม่นำมาคำนวณต้นทุนขาย)"
+      },
+      {
+        id: "s1q6",
+        type: "mcq",
+        topic: "บทที่ 6: การปรับปรุงสินค้าปลายงวด (Perpetual)",
+        text: "กิจการที่ใช้ระบบบัญชีสินค้าต่อเนื่อง มียอดคงเหลือในบัญชีแยกประเภท 'สินค้าคงเหลือ' ณ วันสิ้นงวด 84,500 บาท แต่จากการตรวจนับสินค้าจริงในคลังได้ 82,000 บาท รายการปรับปรุง ณ วันสิ้นงวดคือข้อใด?",
+        options: [
+          "เดบิต สินค้าคงเหลือ 2,500 / เครดิต ต้นทุนขาย 2,500",
+          "เดบิต ต้นทุนขาย 2,500 / เครดิต สินค้าคงเหลือ 2,500",
+          "เดบิต สินค้าคงเหลือ 82,000 / เครดิต สรุปยอดรายได้ค่าใช้จ่าย 82,000",
+          "ไม่ต้องปรับปรุง เพราะระบบต่อเนื่องไม่ต้องตรวจนับสินค้า"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: แม้ใช้ระบบ Perpetual กิจการยังต้องตรวจนับสินค้าอย่างน้อยปีละครั้ง เมื่อยอดในบัญชี (84,500) สูงกว่ายอดตรวจนับจริง (82,000) แสดงว่าสินค้าขาดหาย/สูญหาย 2,500 บาท ต้องปรับลดยอดสินค้าคงเหลือและเพิ่มต้นทุนขาย: เดบิต ต้นทุนขาย 2,500 / เครดิต สินค้าคงเหลือ 2,500"
+      },
+      {
+        id: "s1q7",
+        type: "mcq",
+        topic: "บทที่ 7: การจดทะเบียนภาษีมูลค่าเพิ่ม",
+        text: "ผู้ประกอบการที่มีรายรับจากการขายสินค้าหรือให้บริการเกินกว่า 1,800,000 บาทต่อปี ต้องยื่นคำขอจดทะเบียนภาษีมูลค่าเพิ่มด้วยแบบใด และภายในกำหนดเวลาเท่าใด?",
+        options: [
+          "แบบ ภ.พ. 01 ภายใน 30 วัน นับแต่วันที่มีรายรับเกิน 1,800,000 บาท",
+          "แบบ ภ.พ. 30 ภายใน 15 วัน นับแต่วันสิ้นเดือนที่มีรายรับเกิน",
+          "แบบ ภ.พ. 01 ภายใน 7 วัน นับแต่วันที่มีรายรับเกิน 1,800,000 บาท",
+          "แบบ ภ.พ. 36 ภายใน 30 วัน นับแต่วันสิ้นปีภาษี"
+        ],
+        answer: 0,
+        explanation: "แนวคิด: ตามประมวลรัษฎากร ผู้ประกอบการที่มีรายรับเกิน 1.8 ล้านบาทต่อปี ต้องยื่นคำขอจดทะเบียนภาษีมูลค่าเพิ่มตามแบบ ภ.พ. 01 ภายใน 30 วันนับแต่วันที่มีรายรับเกินเกณฑ์ที่กำหนด"
+      },
+      {
+        id: "s1q8",
+        type: "fill",
+        topic: "บทที่ 7: ฐานภาษีมูลค่าเพิ่มและส่วนลด",
+        text: "กิจการจดทะเบียน VAT 7% ขายสินค้าเป็นเงินเชื่อ ราคาตั้งขาย 100,000 บาท ให้ส่วนลดการค้า (Trade Discount) 10% และกำหนดเงื่อนไขชำระเงิน 2/10, n/30 จงเติมตัวเลขการคำนวณภาษีและการบันทึกบัญชี ณ วันที่ขายสินค้า",
+        rows: [
+          { label: "ฐานภาษีมูลค่าเพิ่มในการคำนวณ VAT", indent: false, key: "tax_base", answer: "90000", hint: "บาท" },
+          { label: "ภาษีขาย (Output VAT 7%)", indent: false, key: "out_vat", answer: "6300", hint: "บาท" },
+          { label: "ยอดลูกหนี้การค้าที่บันทึกบัญชี ณ วันขาย", indent: false, key: "ar_amt", answer: "96300", hint: "บาท" }
+        ],
+        explanation: "แนวคิด: ตามกฎหมายภาษีมูลค่าเพิ่ม ฐานภาษีให้หัก 'ส่วนลดการค้า' ที่แสดงในใบกำกับภาษีได้ (100,000 - 10% = 90,000 บาท) แต่ 'ส่วนลดเงินสด' (2/10) ที่ให้ภายหลังห้ามนำมาหักออกจากฐานภาษี ดังนั้น VAT 7% = 90,000 × 7% = 6,300 บาท และบันทึกเดบิตลูกหนี้การค้า = 96,300 บาท"
+      },
+      {
+        id: "s1q9",
+        type: "mcq",
+        topic: "บทที่ 7: ภาษีซื้อต้องห้าม (มาตรา 82/5)",
+        text: "รายการใดต่อไปนี้ที่กิจการสามารถนำภาษีซื้อมาหักออกจากภาษีขายในการยื่นแบบ ภ.พ. 30 ได้?",
+        options: [
+          "ใบกำกับภาษีเต็มรูปจากการซื้อรถยนต์นั่ง 5 ที่นั่งสำหรับผู้บริหาร",
+          "ใบกำกับภาษีอย่างย่อจากการซื้อวัสดุสำนักงานที่ห้างสรรพสินค้า",
+          "ใบกำกับภาษีเต็มรูปค่าเลี้ยงรับรองลูกค้า ณ โรงแรม",
+          "ใบกำกับภาษีเต็มรูปจากการซื้อเครื่องพิมพ์เอกสารสำหรับใช้ในสำนักงาน"
+        ],
+        answer: 3,
+        explanation: "แนวคิด: ตามมาตรา 82/5 รถยนต์นั่งไม่เกิน 10 ที่นั่ง, ใบกำกับภาษีอย่างย่อ และรายจ่ายเพื่อการรับรอง ล้วนเป็น 'ภาษีซื้อต้องห้าม' ส่วนเครื่องพิมพ์เอกสารใช้ในสำนักงานและมีใบกำกับภาษีเต็มรูป สามารถขอคืน/เครดิตภาษีซื้อได้ตามปกติ"
+      },
+      {
+        id: "s1q10",
+        type: "fill",
+        topic: "บทที่ 7: การนำสินค้าไปแจก/โฆษณา (Deemed Sale)",
+        text: "กิจการ (ระบบ Perpetual, จดทะเบียน VAT 7%) นำสินค้าในคลังซึ่งมีราคาทุน 12,000 บาท (ราคาขายปกติ 18,000 บาท) ไปแจกเป็นของรางวัลในรายการโทรทัศน์เพื่อโฆษณาสินค้า จงเติมตัวเลขในสมุดรายวันทั่วไป",
+        rows: [
+          { label: "เดบิต บัญชีค่าโฆษณา", indent: false, key: "dr_adv", answer: "13260", hint: "บาท" },
+          { label: "เครดิต บัญชีสินค้าคงเหลือ", indent: true, key: "cr_inv", answer: "12000", hint: "บาท" },
+          { label: "เครดิต บัญชีภาษีขาย", indent: true, key: "cr_vat", answer: "1260", hint: "บาท" }
+        ],
+        explanation: "แนวคิด: ตามมาตรา 77/1(8) การนำสินค้าไปแจก/โฆษณาถือเป็นการ 'ขาย' ที่ต้องเสียภาษีขาย โดยคำนวณ VAT 7% จากราคาขาย/ราคาตลาด (18,000 × 7% = 1,260 บาท) ส่วนตัวสินค้าตัดออกจากบัญชีสินค้าคงเหลือด้วยราคาทุน 12,000 บาท และรวมทั้งสองยอดเป็น 'ค่าโฆษณา' 13,260 บาท"
+      },
+      {
+        id: "s1q11",
+        type: "mcq",
+        topic: "บทที่ 7: กิจการยกเว้น VAT vs อัตรา 0%",
+        text: "ข้อใดเป็นกิจการที่ได้รับ 'ยกเว้นภาษีมูลค่าเพิ่ม' ตามมาตรา 81 (ไม่ใช่เสียภาษีในอัตราร้อยละ 0)?",
+        options: [
+          "การส่งออกสินค้าไปจำหน่ายยังต่างประเทศ",
+          "การให้บริการขนส่งระหว่างประเทศโดยอากาศยาน",
+          "การให้บริการขนส่งในราชอาณาจักร และการขายตำราเรียน",
+          "การขายสินค้าให้แก่สถานเอกอัครราชทูต"
+        ],
+        answer: 2,
+        explanation: "แนวคิด: การขนส่งในราชอาณาจักร, การขายตำราเรียน/หนังสือพิมพ์, การรักษาพยาบาล และพืชผลเกษตร เป็นกิจการยกเว้น VAT (ไม่สามารถขอคืนภาษีซื้อได้) ส่วนการส่งออก ขนส่งระหว่างประเทศทางเรือ/อากาศยาน และการขายให้สถานทูต เสีย VAT อัตรา 0% (ขอคืนภาษีซื้อได้)"
+      },
+      {
+        id: "s1q12",
+        type: "fill",
+        topic: "บทที่ 7: การคำนวณภาษีมูลค่าเพิ่มและเครดิตภาษียกไป",
+        text: "เดือนกันยายน กิจการมีภาษีขาย 42,000 บาท และภาษีซื้อ 50,000 บาท (กิจการเลือกยกยอดเครดิตภาษีไปใช้เดือนถัดไป) ต่อมาในเดือนตุลาคม กิจการมีภาษีขาย 65,000 บาท และภาษีซื้อ 48,000 บาท จงเติมตัวเลข",
+        rows: [
+          { label: "ยอดลูกหนี้กรมสรรพากร (เครดิตภาษียกไป) ณ สิ้นเดือน ก.ย.", indent: false, key: "sep_cr", answer: "8000", hint: "บาท" },
+          { label: "ภาษีมูลค่าเพิ่มที่ต้องนำส่งจริงสำหรับเดือน ต.ค. (ยื่นภายใน 15 พ.ย.)", indent: false, key: "oct_pay", answer: "9000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n• เดือน ก.ย.: ภาษีซื้อ (50,000) > ภาษีขาย (42,000) จึงมีภาษีชำระเกิน (ลูกหนี้กรมสรรพากร) ยกไป 8,000 บาท\n• เดือน ต.ค.: ภาษีขาย (65,000) - ภาษีซื้อ (48,000) = 17,000 บาท นำเครดิตภาษีจากเดือน ก.ย. มาหักออก 8,000 บาท เหลือภาษีต้องชำระสุทธิ 9,000 บาท"
+      },
+      {
+        id: "s1q13",
+        type: "mcq",
+        topic: "บทที่ 7: ภาษีขายยังไม่ถึงกำหนด (ธุรกิจบริการ)",
+        text: "กิจการให้บริการซ่อมบำรุงเครื่องจักร ส่งใบแจ้งหนี้ให้ลูกค้าจำนวน 21,400 บาท (รวม VAT 7%) โดยยังไม่ได้รับชำระเงินและยังไม่ออกใบกำกับภาษี กิจการบันทึกบัญชีวิธีรวม VAT อย่างไร?",
+        options: [
+          "เดบิต ลูกหนี้การค้า 21,400 / เครดิต รายได้ค่าบริการ 20,000 และ ภาษีขาย 1,400",
+          "เดบิต ลูกหนี้การค้า 21,400 / เครดิต รายได้ค่าบริการ 20,000 และ ภาษีขายยังไม่ถึงกำหนด 1,400",
+          "เดบิต ลูกหนี้การค้า 20,000 / เครดิต รายได้ค่าบริการ 20,000 (ยังไม่บันทึก VAT จนกว่าจะรับเงิน)",
+          "เดบิต รายได้ค้างรับ 21,400 / เครดิต ภาษีขาย 21,400"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: สำหรับ 'การให้บริการ' ความรับผิดในการเสียภาษี (Tax Point) จะเกิดขึ้นเมื่อได้รับชำระราคาค่าบริการหรือออกใบกำกับภาษีก่อน ดังนั้นเมื่อส่งเพียงใบแจ้งหนี้และเลือกบันทึกวิธีรวม VAT จะเครดิตเข้าบัญชี 'ภาษีขายยังไม่ถึงกำหนด' 1,400 บาทก่อน"
+      },
+      {
+        id: "s1q14",
+        type: "mcq",
+        topic: "บทที่ 7: การถอด VAT จากราคารวมภาษี",
+        text: "กิจการจ่ายค่าไฟฟ้าและค่าน้ำประปาประจำเดือน เป็นจำนวนเงินรวมภาษีมูลค่าเพิ่ม 7% ทั้งสิ้น 16,050 บาท และได้รับใบกำกับภาษีเต็มรูป ภาษีซื้อที่กิจการมีสิทธินำไปขอคืนคือเท่าใด?",
+        options: [
+          "1,123.50 บาท",
+          "1,050.00 บาท",
+          "1,000.00 บาท",
+          "1,120.00 บาท"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: สูตรถอด VAT จากราคารวมภาษีมูลค่าเพิ่ม 7% คือ ยอดรวม × (7 / 107)\nคำนวณ: 16,050 × 7 / 107 = 1,050 บาท (มูลค่าค่าสาธารณูปโภคก่อน VAT = 15,000 บาท)"
+      },
+      {
+        id: "s1q15",
+        type: "fill",
+        topic: "บทที่ 6: การปิดบัญชีผ่านบัญชีต้นทุนขาย (Periodic)",
+        text: "ในระบบสินค้าสิ้นงวด กิจการเลือกปิดบัญชีโดยเปิดบัญชี 'ต้นทุนขาย' ทราบข้อมูล: สินค้าต้นงวด 25,000 บาท, ซื้อ 110,000 บาท, ค่าขนส่งเมื่อซื้อ 4,000 บาท, สินค้าส่งคืน 3,000 บาท, ส่วนลดรับ 2,000 บาท และสินค้าคงเหลือปลายงวด 30,000 บาท จงเติมยอดเงินที่ปิดบัญชีต้นทุนขายเข้าบัญชีสรุปยอดรายได้ค่าใช้จ่าย",
+        rows: [
+          { label: "เดบิต บัญชีสรุปยอดรายได้ค่าใช้จ่าย / เครดิต บัญชีต้นทุนขาย", indent: false, key: "close_cogs", answer: "104000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด: เมื่อโอนรายการเกี่ยวกับต้นทุนขายทั้งหมดมาไว้ที่บัญชี 'ต้นทุนขาย' จะมียอดดุลด้านเดบิตเท่ากับ:\n25,000 (ต้นงวด) + 110,000 (ซื้อ) + 4,000 (ขนส่งเข้า) - 3,000 (ส่งคืน) - 2,000 (ส่วนลดรับ) - 30,000 (ปลายงวด) = 104,000 บาท"
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "ชุดที่ 2: ตีราคาสินค้าคงเหลือ, FlowAccount, ต้นทุนผลิต & วิเคราะห์งบ",
+    level: "ระดับมาตรฐาน–ปานกลาง (สัปดาห์ที่ 9–11, 14–15)",
+    badgeClass: "diff-mid",
+    description: "ครอบคลุมการตีราคาสินค้าคงเหลือตาม TAS 2 (FIFO, Weighted Average, Moving Average), การบันทึกบัญชีผ่านโปรแกรม FlowAccount, งบต้นทุนการผลิตของกิจการอุตสาหกรรม, อัตราส่วนทางการเงิน และงบกระแสเงินสด",
+    topics: [
+      "Cost Flow Assumption (TAS 2): FIFO & Average",
+      "โปรแกรมบัญชีออนไลน์ FlowAccount & ภาษีหัก ณ ที่จ่าย",
+      "กิจการอุตสาหกรรม (COGM) & วิเคราะห์งบ/กระแสเงินสด"
+    ],
+    questions: [
+      {
+        id: "s2q1",
+        type: "mcq",
+        topic: "บทที่ 6: มาตรฐานการบัญชีฉบับที่ 2 (TAS 2)",
+        text: "ตามมาตรฐานการบัญชี ฉบับที่ 2 เรื่อง สินค้าคงเหลือ วิธีการกำหนดราคาทุนของสินค้าคงเหลือวิธีใดที่มาตรฐานการรายงานทางการเงินของไทย (TFRS) 'ไม่อนุญาต' ให้ใช้?",
+        options: [
+          "วิธีราคาเจาะจง (Specific Identification)",
+          "วิธีเข้าก่อน - ออกก่อน (FIFO)",
+          "วิธีถัวเฉลี่ยเคลื่อนที่ (Moving Average)",
+          "วิธีเข้าหลัง - ออกก่อน (LIFO)"
+        ],
+        answer: 3,
+        explanation: "แนวคิด: มาตรฐานการบัญชีฉบับที่ 2 (TAS 2) และ IFRS ไม่อนุญาตให้ใช้วิธี LIFO เนื่องจากจะทำให้มูลค่าสินค้าคงเหลือปลายงวดในงบแสดงฐานะการเงินแสดงด้วยราคาทุนในอดีตที่ต่ำเกินไป ไม่สะท้อนมูลค่าปัจจุบัน"
+      },
+      {
+        id: "s2q2",
+        type: "fill",
+        topic: "บทที่ 6: การคำนวณสินค้าคงเหลือวิธี FIFO",
+        text: "บริษัทแห่งหนึ่งมีข้อมูลสินค้าดังนี้: สินค้าต้นงวด 100 หน่วย @ 20 บาท, ซื้อครั้งที่ 1 จำนวน 200 หน่วย @ 22 บาท, ซื้อครั้งที่ 2 จำนวน 150 หน่วย @ 25 บาท ตลอดงวดขายสินค้าได้รวม 320 หน่วย จงคำนวณตามวิธีเข้าก่อน - ออกก่อน (FIFO)",
+        rows: [
+          { label: "จำนวนสินค้าคงเหลือปลายงวด (หน่วย)", indent: false, key: "end_unit", answer: "130", hint: "หน่วย" },
+          { label: "มูลค่าสินค้าคงเหลือปลายงวด (บาท)", indent: false, key: "end_val", answer: "3250", hint: "บาท" },
+          { label: "ต้นทุนขายประจำงวด (บาท)", indent: false, key: "cogs_fifo", answer: "6900", hint: "บาท" }
+        ],
+        explanation: "แนวคิด (FIFO - ของเก่าขายก่อน ของใหม่เหลืออยู่ปลายงวด):\n• สินค้าที่มีไว้ขายรวม = 100 + 200 + 150 = 450 หน่วย (มูลค่ารวม = 2,000 + 4,400 + 3,750 = 10,150 บาท)\n• คงเหลือปลายงวด = 450 - 320 = 130 หน่วย ซึ่งมาจากล็อตซื้อครั้งที่ 2 ทั้งหมด = 130 × 25 = 3,250 บาท\n• ต้นทุนขาย = 10,150 - 3,250 = 6,900 บาท (หรือ 100×20 + 200×22 + 20×25)"
+      },
+      {
+        id: "s2q3",
+        type: "fill",
+        topic: "บทที่ 6: วิธีถัวเฉลี่ยถ่วงน้ำหนัก (Weighted Average)",
+        text: "จากข้อมูลในข้อ 2 (สินค้ามีไว้ขายรวม 450 หน่วย มูลค่ารวม 10,150 บาท และมีสินค้าคงเหลือปลายงวด 130 หน่วย) หากกิจการใช้ระบบ Periodic และตีราคาสินค้าด้วยวิธีถัวเฉลี่ยถ่วงน้ำหนัก จงคำนวณ (กำหนดให้ปัดเศษต้นทุนต่อหน่วยเป็นทศนิยม 2 ตำแหน่งก่อนนำไปคูณ)",
+        rows: [
+          { label: "ต้นทุนถัวเฉลี่ยถ่วงน้ำหนักต่อหน่วย (บาท/หน่วย)", indent: false, key: "avg_cost", answer: "22.56", hint: "บาท" },
+          { label: "มูลค่าสินค้าคงเหลือปลายงวด (130 หน่วย × ต้นทุนต่อหน่วย)", indent: false, key: "end_avg", answer: "2932.80", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n• ต้นทุนถัวเฉลี่ยถ่วงน้ำหนักต่อหน่วย = 10,150 / 450 = 22.5555... ปัดเป็น 22.56 บาท/หน่วย\n• มูลค่าสินค้าคงเหลือปลายงวด = 130 × 22.56 = 2,932.80 บาท"
+      },
+      {
+        id: "s2q4",
+        type: "mcq",
+        topic: "บทที่ 6: ผลกระทบต่อกำไรในช่วงราคาสินค้าสูงขึ้น",
+        text: "ในช่วงที่ราคาสินค้าในตลาดปรับตัวสูงขึ้นอย่างต่อเนื่อง (ภาวะเงินเฟ้อ) วิธีการตีราคาสินค้าคงเหลือวิธีใดจะทำให้กิจการรายงาน 'กำไรสุทธิสูงที่สุด' และ 'สินค้าคงเหลือปลายงวดสูงที่สุด'?",
+        options: [
+          "วิธีเข้าก่อน - ออกก่อน (FIFO)",
+          "วิธีถัวเฉลี่ยถ่วงน้ำหนัก (Weighted Average)",
+          "วิธีถัวเฉลี่ยเคลื่อนที่ (Moving Average)",
+          "ทุกวิธีให้กำไรสุทธิเท่ากันเสมอ"
+        ],
+        answer: 0,
+        explanation: "แนวคิด: ในช่วงราคาสินค้าสูงขึ้น วิธี FIFO จะนำต้นทุนสินค้าล็อตแรก ๆ ที่มีราคาถูกกว่าไปตัดเป็นต้นทุนขาย ทำให้ต้นทุนขายต่ำ กำไรสุทธิจึงสูงที่สุด และสินค้าที่เหลืออยู่ปลายงวดเป็นล็อตล่าสุดที่มีราคาแพง สินค้าปลายงวดจึงสูงที่สุดด้วย"
+      },
+      {
+        id: "s2q5",
+        type: "mcq",
+        topic: "สัปดาห์ที่ 9: โปรแกรมบัญชีออนไลน์ FlowAccount",
+        text: "ในการใช้งานโปรแกรม FlowAccount เมื่อกิจการออก 'ใบเสร็จรับเงิน/ใบกำกับภาษี (Receipt/Tax Invoice)' เพื่อรับชำระค่าบริการเป็นเงินโอนเข้าบัญชีธนาคารของบริษัท ระบบจะลงบัญชีให้อัตโนมัติ (Auto-Journal) และเชื่อมโยงรายงานใด?",
+        options: [
+          "เดบิต เงินฝากธนาคาร / เครดิต รายได้ค่าบริการ และ ภาษีขาย พร้อมบันทึกลงรายงานภาษีขาย",
+          "เดบิต ลูกหนี้การค้า / เครดิต รายได้ค่าบริการ และ ภาษีซื้อ พร้อมบันทึกลงรายงานภาษีซื้อ",
+          "เดบิต เงินฝากธนาคาร / เครดิต รายได้รับล่วงหน้า โดยยังไม่บันทึกภาษีขาย",
+          "เดบิต รายได้ค่าบริการ / เครดิต เงินฝากธนาคาร และ ภาษีมูลค่าเพิ่มค้างจ่าย"
+        ],
+        answer: 0,
+        explanation: "แนวคิด: โปรแกรม FlowAccount ออกแบบมาให้เอกสารทางธุรกิจเชื่อมโยงกับการบันทึกบัญชีคู่และภาษีอัตโนมัติ เมื่อออกใบเสร็จรับเงิน/ใบกำกับภาษีรับเงินโอน ระบบจะเดบิตเงินฝากธนาคาร เครดิตรายได้และภาษีขาย พร้อมส่งข้อมูลเข้ารายงานภาษีขาย (เพื่อยื่น ภ.พ.30) ทันที"
+      },
+      {
+        id: "s2q6",
+        type: "mcq",
+        topic: "สัปดาห์ที่ 9: FlowAccount และภาษีหัก ณ ที่จ่าย",
+        text: "กิจการบันทึกค่าใช้จ่ายในโปรแกรม FlowAccount โดยจ่ายค่าบริการจ้างออกแบบเว็บไซต์ให้บริษัทนิติบุคคลแห่งหนึ่ง ราคาค่าบริการ 10,000 บาท + VAT 7% (700 บาท) รวม 10,700 บาท และเลือกตัวเลือก 'หักภาษี ณ ที่จ่าย 3%' ยอดเงินสด/โอนจ่ายสุทธิที่ระบบคำนวณให้โอนจ่ายจริงคือเท่าใด?",
+        options: [
+          "10,379 บาท",
+          "10,400 บาท",
+          "9,700 บาท",
+          "10,700 บาท"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: ภาษีเงินได้หัก ณ ที่จ่าย (ภ.ง.ด. 53) คำนวณจากมูลค่าค่าบริการ 'ก่อน' บวกภาษีมูลค่าเพิ่มเสมอ นั่นคือ 10,000 × 3% = 300 บาท ดังนั้นยอดเงินโอนจ่ายสุทธิ = 10,700 - 300 = 10,400 บาท"
+      },
+      {
+        id: "s2q7",
+        type: "mcq",
+        topic: "สัปดาห์ที่ 14: การบัญชีสำหรับกิจการอุตสาหกรรม",
+        text: "ข้อใดจัดเป็น 'ค่าใช้จ่ายในการผลิต (Manufacturing Overhead - MOH)' ของโรงงานผลิตเสื้อผ้าสำเร็จรูปทั้งหมด?",
+        options: [
+          "ผ้าฝ้ายสำหรับตัดเย็บ, ค่าแรงช่างเย็บผ้า และค่าเสื่อมราคาจักรเย็บผ้า",
+          "ค่าเสื่อมราคาอาคารโรงงาน, เงินเดือนหัวหน้าคุมงานโรงงาน และค่าไฟฟ้าโรงงาน",
+          "ค่าคอมมิชชันพนักงานขาย, ค่าโฆษณา และเงินเดือนผู้จัดการฝ่ายขาย",
+          "ด้ายและกระดุม, ค่าแรงช่างตัดผ้า และค่าขนส่งสินค้าไปส่งให้ลูกค้า"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: ค่าใช้จ่ายในการผลิต (MOH) คือต้นทุนการผลิตทั้งหมดที่ไม่ใช่ DM และ DL ได้แก่ ค่าเสื่อมราคาอาคารโรงงาน เงินเดือนหัวหน้าคุมงาน (ค่าแรงทางอ้อม) และค่าไฟฟ้าโรงงาน ส่วนผ้าฝ้ายและช่างเย็บผ้าเป็น DM/DL และค่าคอมมิชชัน/ค่าขนส่งออกเป็นค่าใช้จ่ายในการขาย"
+      },
+      {
+        id: "s2q8",
+        type: "fill",
+        topic: "สัปดาห์ที่ 14: Prime Cost & Conversion Cost",
+        text: "โรงงานผลิตเฟอร์นิเจอร์แห่งหนึ่งมีข้อมูลต้นทุนประจำเดือนดังนี้: วัตถุดิบทางตรงใช้ไป 180,000 บาท, ค่าแรงงานทางตรง 120,000 บาท, ค่าแรงงานทางอ้อม 35,000 บาท, ค่าเสื่อมราคาเครื่องจักร 45,000 บาท และค่าเช่าสำนักงานใหญ่ 30,000 บาท จงคำนวณ",
+        rows: [
+          { label: "ต้นทุนขั้นต้น (Prime Cost)", indent: false, key: "prime", answer: "300000", hint: "บาท" },
+          { label: "ต้นทุนแปรสภาพ (Conversion Cost)", indent: false, key: "conv", answer: "200000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n• ต้นทุนขั้นต้น (Prime Cost) = วัตถุดิบทางตรง (180,000) + ค่าแรงงานทางตรง (120,000) = 300,000 บาท\n• ต้นทุนแปรสภาพ (Conversion Cost) = ค่าแรงงานทางตรง (120,000) + ค่าใช้จ่ายในการผลิต (35,000 + 45,000) = 200,000 บาท\n(*ค่าเช่าสำนักงานใหญ่ 30,000 บาท เป็นค่าใช้จ่ายในการบริหาร ไม่ใช่ต้นทุนการผลิต)"
+      },
+      {
+        id: "s2q9",
+        type: "fill",
+        topic: "สัปดาห์ที่ 14: งบต้นทุนการผลิต (COGM) และต้นทุนขาย",
+        text: "ข้อมูลของกิจการอุตสาหกรรม: วัตถุดิบต้นงวด 30,000 บาท, ซื้อวัตถุดิบสุทธิ 150,000 บาท, วัตถุดิบปลายงวด 25,000 บาท, ค่าแรงงานทางตรง 95,000 บาท, ค่าใช้จ่ายในการผลิต 60,000 บาท, งานระหว่างทำต้นงวด 40,000 บาท, งานระหว่างทำปลายงวด 32,000 บาท, สินค้าสำเร็จรูปต้นงวด 50,000 บาท และสินค้าสำเร็จรูปปลายงวด 45,000 บาท จงเติมตัวเลข",
+        rows: [
+          { label: "วัตถุดิบทางตรงใช้ไป (Direct Materials Used)", indent: false, key: "dm_used", answer: "155000", hint: "บาท" },
+          { label: "ต้นทุนสินค้าที่ผลิตเสร็จ (Cost of Goods Manufactured)", indent: false, key: "cogm", answer: "318000", hint: "บาท" },
+          { label: "ต้นทุนขาย (Cost of Goods Sold)", indent: false, key: "cogs_mfg", answer: "323000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n1. วัตถุดิบทางตรงใช้ไป = 30,000 + 150,000 - 25,000 = 155,000 บาท\n2. ต้นทุนการผลิตรวม = 155,000 + 95,000 + 60,000 = 310,000 บาท\n3. ต้นทุนสินค้าที่ผลิตเสร็จ (COGM) = 310,000 + งานระหว่างทำต้นงวด (40,000) - งานระหว่างทำปลายงวด (32,000) = 318,000 บาท\n4. ต้นทุนขาย (COGS) = สินค้าสำเร็จรูปต้นงวด (50,000) + COGM (318,000) - สินค้าสำเร็จรูปปลายงวด (45,000) = 323,000 บาท"
+      },
+      {
+        id: "s2q10",
+        type: "mcq",
+        topic: "สัปดาห์ที่ 15: การวิเคราะห์งบการเงิน (Vertical Analysis)",
+        text: "ในการวิเคราะห์งบการเงินแบบแนวดิ่ง (Vertical Analysis หรือ Common-Size Statement) สำหรับงบกำไรขาดทุนเบ็ดเสร็จ รายการใดจะถูกกำหนดให้เป็นฐาน 100%?",
+        options: [
+          "กำไรขั้นต้น (Gross Profit)",
+          "รายได้ค่าขายสุทธิ (Net Sales)",
+          "สินทรัพย์รวม (Total Assets)",
+          "กำไรสุทธิ (Net Income)"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: การวิเคราะห์แนวดิ่ง (Common-Size) ในงบกำไรขาดทุนเบ็ดเสร็จ จะใช้ 'รายได้ค่าขายสุทธิ (Net Sales)' เป็นฐาน 100% เพื่อเทียบสัดส่วนต้นทุนและค่าใช้จ่ายแต่ละรายการ ส่วนงบแสดงฐานะการเงินจะใช้ 'สินทรัพย์รวม' เป็นฐาน 100%"
+      },
+      {
+        id: "s2q11",
+        type: "fill",
+        topic: "สัปดาห์ที่ 15: อัตราส่วนสภาพคล่องและประสิทธิภาพ",
+        text: "งบการเงินของบริษัทแสดงข้อมูลดังนี้: เงินสด 60,000 บาท, ลูกหนี้การค้าสุทธิ 90,000 บาท, สินค้าคงเหลือต้นงวด 70,000 บาท, สินค้าคงเหลือปลายงวด 90,000 บาท, หนี้สินหมุนเวียน 120,000 บาท และต้นทุนขาย 400,000 บาท จงคำนวณอัตราส่วนต่อไปนี้ (ตอบเป็นทศนิยม 2 ตำแหน่ง)",
+        rows: [
+          { label: "อัตราส่วนทุนหมุนเวียน (Current Ratio - เท่า)", indent: false, key: "cr_ratio", answer: "2.00", hint: "เท่า" },
+          { label: "อัตราส่วนทุนหมุนเวียนเร็ว (Quick Ratio - เท่า)", indent: false, key: "qr_ratio", answer: "1.25", hint: "เท่า" },
+          { label: "อัตราการหมุนเวียนของสินค้าคงเหลือ (Inventory Turnover - รอบ)", indent: false, key: "inv_turn", answer: "5.00", hint: "รอบ" }
+        ],
+        explanation: "แนวคิด:\n• Current Ratio = สินทรัพย์หมุนเวียนปลายงวด / หนี้สินหมุนเวียน = (60,000 + 90,000 + 90,000) / 120,000 = 240,000 / 120,000 = 2.00 เท่า\n• Quick Ratio = (เงินสด + ลูกหนี้การค้า) / หนี้สินหมุนเวียน = (60,000 + 90,000) / 120,000 = 150,000 / 120,000 = 1.25 เท่า\n• Inventory Turnover = ต้นทุนขาย / สินค้าคงเหลือเฉลี่ย = 400,000 / [(70,000 + 90,000)/2] = 400,000 / 80,000 = 5.00 รอบ"
+      },
+      {
+        id: "s2q12",
+        type: "mcq",
+        topic: "สัปดาห์ที่ 15: การจัดประเภทรายการในงบกระแสเงินสด",
+        text: "รายการใดต่อไปนี้จัดเป็นกระแสเงินสดจาก 'กิจกรรมจัดหาเงิน (Financing Activities)' ในงบกระแสเงินสด?",
+        options: [
+          "เงินสดจ่ายซื้ออุปกรณ์สำนักงานและเครื่องจักร",
+          "เงินสดรับจากการจำหน่ายหุ้นสามัญเพิ่มทุน และเงินสดจ่ายเงินปันผล",
+          "เงินสดรับจากลูกค้าตามบัญชีลูกหนี้การค้า",
+          "เงินสดรับจากดอกเบี้ยเงินฝากธนาคาร"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: กิจกรรมจัดหาเงิน (Financing Activities) เกี่ยวข้องกับการเปลี่ยนแปลงขนาดและโครงสร้างของส่วนของเจ้าของและเงินกู้ยืม ได้แก่ การออกหุ้นเพิ่มทุน การกู้ยืม/ชำระคืนเงินกู้ และการจ่ายเงินปันผลให้ผู้ถือหุ้น"
+      },
+      {
+        id: "s2q13",
+        type: "fill",
+        topic: "สัปดาห์ที่ 15: งบกระแสเงินสด (วิธีทางอ้อม - CFO)",
+        text: "บริษัทมีกำไรสุทธิประจำปี 250,000 บาท โดยมีข้อมูลเพิ่มเติมดังนี้: ค่าเสื่อมราคา 40,000 บาท, กำไรจากการขายอุปกรณ์ 15,000 บาท, ลูกหนี้การค้าเพิ่มขึ้น 25,000 บาท, สินค้าคงเหลือลดลง 10,000 บาท และเจ้าหนี้การค้าเพิ่มขึ้น 18,000 บาท จงคำนวณ",
+        rows: [
+          { label: "กระแสเงินสดสุทธิจากกิจกรรมดำเนินงาน (CFO)", indent: false, key: "cfo_val", answer: "278000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด (วิธีทางอ้อม):\n• กำไรสุทธิ: 250,000\n• บวก ค่าเสื่อมราคา (ค่าใช้จ่ายไม่ใช้เงินสด): +40,000\n• หัก กำไรจากการขายอุปกรณ์ (เป็นกิจกรรมลงทุน): -15,000\n• หัก ลูกหนี้การค้าเพิ่มขึ้น (เงินจมเพิ่ม): -25,000\n• บวก สินค้าคงเหลือลดลง (ขายออกได้เงิน): +10,000\n• บวก เจ้าหนี้การค้าเพิ่มขึ้น (ชะลอการจ่ายเงิน): +18,000\nรวม CFO = 250,000 + 40,000 - 15,000 - 25,000 + 10,000 + 18,000 = 278,000 บาท"
+      },
+      {
+        id: "s2q14",
+        type: "mcq",
+        topic: "บทที่ 6: วิธีถัวเฉลี่ยเคลื่อนที่ (Moving Average)",
+        text: "กิจการใช้ระบบ Perpetual และตีราคาสินค้าด้วยวิธีถัวเฉลี่ยเคลื่อนที่ วันที่ 1 มีสินค้าคงเหลือ 200 หน่วย @ 10 บาท วันที่ 5 ซื้อเพิ่ม 300 หน่วย @ 15 บาท วันที่ 10 ขายสินค้า 250 หน่วย ต้นทุนขายของการขายวันที่ 10 คือเท่าใด?",
+        options: [
+          "2,500 บาท",
+          "3,250 บาท",
+          "3,750 บาท",
+          "3,125 บาท"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: วิธี Moving Average ต้องคำนวณต้นทุนเฉลี่ยใหม่ทุกครั้งที่มีการซื้อสินค้า:\n• มูลค่ารวม ณ วันที่ 5 = (200 × 10) + (300 × 15) = 2,000 + 4,500 = 6,500 บาท\n• จำนวนรวม = 200 + 300 = 500 หน่วย -> ต้นทุนเฉลี่ย = 6,500 / 500 = 13 บาท/หน่วย\n• ต้นทุนขายวันที่ 10 = 250 × 13 = 3,250 บาท"
+      },
+      {
+        id: "s2q15",
+        type: "mcq",
+        topic: "สัปดาห์ที่ 15: อัตราส่วนความสามารถในการทำกำไร",
+        text: "บริษัทมีรายได้ค่าขายสุทธิ 2,000,000 บาท กำไรขั้นต้น 700,000 บาท กำไรสุทธิ 240,000 บาท และสินทรัพย์รวมเฉลี่ย 1,600,000 บาท อัตราผลตอบแทนต่อสินทรัพย์ (Return on Assets: ROA) เท่ากับกี่เปอร์เซ็นต์?",
+        options: [
+          "12.0%",
+          "15.0%",
+          "35.0%",
+          "43.75%"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: สูตร ROA = (กำไรสุทธิ / สินทรัพย์รวมเฉลี่ย) × 100\nคำนวณ: (240,000 / 1,600,000) × 100 = 15.0%"
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "ชุดที่ 3: ข้อสอบประยุกต์ขั้นสูง (Chula CBS Hard Mode)",
+    level: "ระดับยาก (วิเคราะห์ซับซ้อน & คำนวณย้อนกลับ)",
+    badgeClass: "diff-hard",
+    hard: true,
+    description: "ข้อสอบระดับความยากสูง ออกแบบตามแนวข้อสอบปลายภาคจุฬาฯ ผสมผสานหลายบทในข้อเดียว: การรับชำระหนี้บางส่วนพร้อมส่วนลดและ VAT, Moving Average ที่มีทั้งส่งคืนและรับคืน, Cutoff Incoterms, คำนวณย้อนกลับงบต้นทุนการผลิต, Multi-year Inventory Error และ DuPont ROE",
+    topics: [
+      "โจทย์หลอก Cutoff, Tax Point มัดจำ และภาษีซื้อต้องห้าม",
+      "Moving Average ซับซ้อน & Multi-year Inventory Error",
+      "Reverse Engineering: งบต้นทุนผลิต + อัตราส่วน DuPont + CFO"
+    ],
+    questions: [
+      {
+        id: "s3q1",
+        type: "fill",
+        topic: "บทที่ 6 & 7 (Hard): รับชำระหนี้บางส่วนในกำหนดส่วนลด + VAT",
+        text: "กิจการจดทะเบียน VAT 7% ขายสินค้าเชื่อให้ร้านนภา 100 หน่วย ราคาหน่วยละ 1,000 บาท (ไม่รวม VAT) เงื่อนไข 2/10, n/30 ต่อมาร้านนภาส่งคืนสินค้า 10 หน่วย และต่อมาภายในกำหนด 10 วัน ร้านนภาชำระเงิน 'บางส่วน' เป็นเงินสด 52,500 บาท (กิจการยอมให้ส่วนลดเงินสด 2% ตามสัดส่วนยอดที่ชำระ) จงคำนวณ",
+        rows: [
+          { label: "ยอดลูกหนี้การค้าคงค้างสุทธิหลังรับคืนสินค้า (รวม VAT)", indent: false, key: "ar_net", answer: "96300", hint: "บาท" },
+          { label: "ยอดลูกหนี้การค้าที่ถูกตัดบัญชีลดลงในวันรับชำระเงินบางส่วน", indent: false, key: "ar_credit", answer: "53500", hint: "บาท" },
+          { label: "ส่วนลดจ่ายที่บันทึกบัญชีในวันรับชำระเงิน", indent: false, key: "sales_disc", answer: "1000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด (อ้างอิงตัวอย่างหน้า 271 ของตำรา):\n1. หลังรับคืน 10 หน่วย เหลือ 90 หน่วย มูลค่าสินค้า 90,000 + VAT 6,300 = 96,300 บาท\n2. สมมติมูลค่าสินค้า (ก่อน VAT) ที่ร้านนภาขอชำระคือ X บาท -> ยอดลูกหนี้รวม VAT ที่ตัดลดคือ 1.07X และส่วนลดจ่าย 2% คำนวณจากฐานก่อน VAT คือ 0.02X\n3. เงินสดที่ได้รับจริง: 1.07X - 0.02X = 1.05X = 52,500 -> X = 50,000 บาท\n4. ดังนั้น ตัดบัญชีลูกหนี้การค้า = 1.07(50,000) = 53,500 บาท และบันทึกส่วนลดจ่าย = 0.02(50,000) = 1,000 บาท"
+      },
+      {
+        id: "s3q2",
+        type: "fill",
+        topic: "บทที่ 6 (Hard): Moving Average กับการส่งคืนสินค้า",
+        text: "กิจการใช้ระบบ Perpetual + Moving Average:\n• 1 เม.ย. ยกมา 100 หน่วย @ 50 บาท = 5,000 บาท\n• 5 เม.ย. ซื้อ 150 หน่วย @ 60 บาท = 9,000 บาท\n• 10 เม.ย. ขาย 100 หน่วย\n• 12 เม.ย. ส่งคืนสินค้าที่ซื้อเมื่อวันที่ 5 เม.ย. จำนวน 25 หน่วย\n• 15 เม.ย. ขาย 50 หน่วย\nจงคำนวณตัวเลขต่อไปนี้",
+        rows: [
+          { label: "ราคาทุนเฉลี่ยต่อหน่วย ณ วันที่ 12 เม.ย. หลังส่งคืนสินค้า (ทศนิยม 2 ตำแหน่ง)", indent: false, key: "avg_12", answer: "55.20", hint: "บาท" },
+          { label: "ต้นทุนขายของการขายวันที่ 15 เม.ย. (50 หน่วย)", indent: false, key: "cogs_15", answer: "2760", hint: "บาท" },
+          { label: "มูลค่าสินค้าคงเหลือปลายงวด ณ วันที่ 15 เม.ย. (75 หน่วย)", indent: false, key: "inv_15", answer: "4140", hint: "บาท" }
+        ],
+        explanation: "แนวคิด (อ้างอิงตัวอย่างหน้า 207 ของตำรา):\n• 5 เม.ย. รวม 250 หน่วย มูลค่า 14,000 บาท -> เฉลี่ย 56.00 บาท/หน่วย\n• 10 เม.ย. ขาย 100 หน่วย @ 56 = 5,600 บาท -> เหลือ 150 หน่วย มูลค่า 8,400 บาท\n• 12 เม.ย. ส่งคืน 25 หน่วยของวันที่ 5 เม.ย. ต้องคืนด้วยราคาที่ซื้อมา (@ 60 บาท = 1,500 บาท) ทำให้เหลือ 125 หน่วย มูลค่ารวม 8,400 - 1,500 = 6,900 บาท -> ต้นทุนเฉลี่ยใหม่ = 6,900 / 125 = 55.20 บาท/หน่วย\n• 15 เม.ย. ขาย 50 หน่วย @ 55.20 = 2,760 บาท เหลือ 75 หน่วย @ 55.20 = 4,140 บาท"
+      },
+      {
+        id: "s3q3",
+        type: "mcq",
+        topic: "บทที่ 6 (Hard): Inventory Cutoff & Incoterms Trap",
+        text: "ณ วันที่ 31 ธ.ค. กิจการตรวจนับสินค้าคงเหลือในคลังได้ 500,000 บาท แต่พบรายการระหว่างทาง 2 รายการ:\n(1) สั่งซื้อสินค้าจากต่างประเทศเงื่อนไข F.O.B. Shipping Point ราคาทุน 40,000 บาท ผู้ขายส่งลงเรือต้นทางแล้ววันที่ 29 ธ.ค. แต่เรือยังไม่ถึงท่าเรือไทย\n(2) ขายสินค้าให้ลูกค้าต่างประเทศเงื่อนไข C.I.F. (ท่าเรือปลายทาง) ราคาทุน 30,000 บาท (ราคาขาย 45,000 บาท) ส่งสินค้าข้ามกาบเรือต้นทางแล้ววันที่ 30 ธ.ค. แต่ยังอยู่ระหว่างเดินเรือ\nมูลค่าสินค้าคงเหลือปลายงวดที่ถูกต้อง ณ วันที่ 31 ธ.ค. คือเท่าใด?",
+        options: [
+          "500,000 บาท",
+          "540,000 บาท",
+          "570,000 บาท",
+          "530,000 บาท"
+        ],
+        answer: 1,
+        explanation: "แนวคิด (จุดหลอกสำคัญตามตำราหน้า 161):\n• รายการ (1) F.O.B. Shipping Point กรรมสิทธิ์โอนให้ผู้ซื้อทันทีที่ลงเรือต้นทาง (29 ธ.ค.) จึงต้องนับรวมเป็นสินค้าของกิจการ (+40,000 บาท)\n• รายการ (2) C.I.F. ผู้ขายจ่ายค่าระวางและประกันภัยให้ก็จริง แต่ตามนิยาม Incoterms หน้า 161 'ผู้ขายจะสิ้นสุดภาระการส่งมอบสินค้า เมื่อได้ส่งมอบสินค้าข้ามกาบเรือขึ้นไปบนเรือสินค้า ณ ท่าเรือต้นทาง' กรรมสิทธิ์จึงโอนให้ลูกค้าไปแล้วตั้งแต่วันที่ 30 ธ.ค. ไม่ต้องบวกกลับ!\nดังนั้น สินค้าปลายงวดที่ถูกต้อง = 500,000 + 40,000 = 540,000 บาท"
+      },
+      {
+        id: "s3q4",
+        type: "fill",
+        topic: "สัปดาห์ที่ 14 (Hard): คำนวณย้อนกลับงบต้นทุนการผลิต",
+        text: "โรงงานแห่งหนึ่งประสบอัคคีภัยทำให้เอกสารบางส่วนเสียหาย เหลือข้อมูลดังนี้: ต้นทุนขาย (COGS) = 620,000 บาท, สินค้าสำเร็จรูปต้นงวด = 80,000 บาท, สินค้าสำเร็จรูปปลายงวด = 60,000 บาท, งานระหว่างทำต้นงวด = 45,000 บาท, งานระหว่างทำปลายงวด = 55,000 บาท, วัตถุดิบทางตรงใช้ไป = 260,000 บาท และค่าใช้จ่ายในการผลิต (MOH) คิดเป็น 75% ของค่าแรงงานทางตรง (DL) จงคำนวณย้อนกลับ",
+        rows: [
+          { label: "ต้นทุนสินค้าที่ผลิตเสร็จ (COGM)", indent: false, key: "rev_cogm", answer: "600000", hint: "บาท" },
+          { label: "ต้นทุนการผลิตรวม (Total Manufacturing Costs)", indent: false, key: "rev_tmc", answer: "610000", hint: "บาท" },
+          { label: "ค่าแรงงานทางตรง (Direct Labor)", indent: false, key: "rev_dl", answer: "200000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n1. COGS = Beg FG + COGM - End FG -> 620,000 = 80,000 + COGM - 60,000 -> COGM = 600,000 บาท\n2. COGM = Total Mfg Costs + Beg WIP - End WIP -> 600,000 = TMC + 45,000 - 55,000 -> TMC = 610,000 บาท\n3. TMC = DM + DL + MOH -> 610,000 = 260,000 + DL + 0.75(DL) -> 1.75(DL) = 350,000 -> DL = 200,000 บาท (และ MOH = 150,000 บาท)"
+      },
+      {
+        id: "s3q5",
+        type: "mcq",
+        topic: "บทที่ 7 (Hard): ภาษีซื้อต้องห้ามและผลกระทบทางภาษีเงินได้",
+        text: "บริษัทจดทะเบียน VAT ซื้อรถยนต์นั่ง 5 ที่นั่งให้ผู้บริหาร ราคา 1,000,000 บาท + VAT 70,000 บาท (รวม 1,070,000 บาท) และจ่ายค่ารับรองลูกค้า 21,400 บาท (รวม VAT 1,400 บาท) โดยมีใบกำกับภาษีเต็มรูปทั้ง 2 รายการ ข้อใดสรุปการบันทึกบัญชีและผลกระทบทางภาษีได้ถูกต้องที่สุด?",
+        options: [
+          "ขอคืนภาษีซื้อได้ทั้ง 71,400 บาท เพราะมีใบกำกับภาษีเต็มรูปครบถ้วน",
+          "บันทึกรถยนต์ 1,070,000 บาท และค่ารับรอง 21,400 บาท (เป็นภาษีซื้อต้องห้ามทั้งหมด) โดยภาษีซื้อต้องห้าม 1,400 บาทจากค่ารับรองต้องนำไปบวกกลับในการคำนวณภาษีเงินได้นิติบุคคล",
+          "บันทึกรถยนต์ 1,000,000 บาท ภาษีซื้อ 70,000 บาท และบันทึกค่ารับรอง 21,400 บาท",
+          "บันทึกรถยนต์ 1,070,000 บาท และขอคืนภาษีซื้อค่ารับรองได้ 1,400 บาท"
+        ],
+        answer: 1,
+        explanation: "แนวคิด (อ้างอิงหน้า 223 & 229 ของตำรา): ทั้งรถยนต์นั่งไม่เกิน 10 ที่นั่ง และค่ารับรอง เป็นภาษีซื้อต้องห้ามตามมาตรา 82/5 จึงต้องนำ VAT ไปรวมเป็นราคาทุนของสินทรัพย์ (รถยนต์ 1,070,000 บาท) หรือค่าใช้จ่าย (ค่ารับรอง 21,400 บาท) และภาษีซื้อต้องห้ามที่บันทึกเป็นค่าใช้จ่ายต้องนำไปบวกกลับในการคำนวณกำไรสุทธิเพื่อเสียภาษีเงินได้นิติบุคคล"
+      },
+      {
+        id: "s3q6",
+        type: "fill",
+        topic: "สัปดาห์ที่ 15 (Hard): การคำนวณย้อนกลับอัตราส่วนทางการเงิน",
+        text: "กิจการมีหนี้สินหมุนเวียน 200,000 บาท, Current Ratio = 2.5 เท่า, Quick Ratio = 1.4 เท่า (สินทรัพย์หมุนเวียนมีเพียงเงินสด ลูกหนี้การค้า และสินค้าคงเหลือ) หากอัตราการหมุนเวียนของสินค้าคงเหลือ (Inventory Turnover) = 4.0 รอบ และสินค้าคงเหลือต้นงวดเท่ากับ 180,000 บาท จงคำนวณ",
+        rows: [
+          { label: "มูลค่าสินค้าคงเหลือปลายงวด", indent: false, key: "end_inv_r", answer: "220000", hint: "บาท" },
+          { label: "ต้นทุนขายประจำงวด (COGS)", indent: false, key: "cogs_r", answer: "800000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n1. Current Assets = 2.5 × 200,000 = 500,000 บาท\n2. Quick Assets (เงินสด + ลูกหนี้) = 1.4 × 200,000 = 280,000 บาท\n3. สินค้าคงเหลือปลายงวด = 500,000 - 280,000 = 220,000 บาท\n4. สินค้าคงเหลือเฉลี่ย = (180,000 + 220,000) / 2 = 200,000 บาท\n5. ต้นทุนขาย = Inventory Turnover × สินค้าเฉลี่ย = 4.0 × 200,000 = 800,000 บาท"
+      },
+      {
+        id: "s3q7",
+        type: "mcq",
+        topic: "สัปดาห์ที่ 9 (Hard): FlowAccount กับการออกใบลดหนี้ (Credit Note)",
+        text: "กิจการขายสินค้าซื้อมาขายไป (ตั้งค่าระบบบันทึกบัญชีแบบ Perpetual ใน FlowAccount) ต่อมาลูกค้าเงินเชื่อขอคืนสินค้าบางส่วน กิจการจึงสร้างเอกสาร 'ใบลดหนี้ (Credit Note)' ใน FlowAccount ระบบจะลงบัญชีคู่ให้อัตโนมัติอย่างไร?",
+        options: [
+          "เดบิต สินค้ารับคืนและส่วนลด, เดบิต ภาษีขาย / เครดิต ลูกหนี้การค้า (เพียงคู่เดียว)",
+          "เดบิต สินค้ารับคืนและส่วนลด, เดบิต ภาษีขาย / เครดิต ลูกหนี้การค้า และ เดบิต สินค้าคงเหลือ / เครดิต ต้นทุนขาย",
+          "เดบิต รายได้ค่าขาย, เดบิต ภาษีซื้อ / เครดิต เงินสด และ เดบิต ต้นทุนขาย / เครดิต สินค้าคงเหลือ",
+          "เดบิต สินค้าส่งคืนและส่วนลด / เครดิต เจ้าหนี้การค้า และ ภาษีซื้อ"
+        ],
+        answer: 1,
+        explanation: "แนวคิด: เมื่อออกใบลดหนี้รับคืนสินค้าในระบบ Perpetual จะต้องบันทึก 2 คู่เสมอ คือ (1) ลดรายได้ค่าขายด้วยบัญชีสินค้ารับคืนและส่วนลด ลดภาษีขาย และลดลูกหนี้การค้า (2) รับสินค้ากลับเข้าคลังด้วยราคาทุนโดยเดบิตสินค้าคงเหลือและเครดิตต้นทุนขาย"
+      },
+      {
+        id: "s3q8",
+        type: "fill",
+        topic: "สัปดาห์ที่ 15 (Hard): งบกระแสเงินสดแบบสมบูรณ์ (CFO)",
+        text: "บริษัทมีกำไรสุทธิ 400,000 บาท ข้อมูลเพิ่มเติม: (1) ค่าเสื่อมราคา 65,000 บาท (2) ขายเครื่องจักรราคาทุน 100,000 บาท ค่าเสื่อมราคาสะสม 60,000 บาท ได้เงินสด 32,000 บาท (3) ลูกหนี้การค้าลดลง 20,000 บาท (4) สินค้าคงเหลือเพิ่มขึ้น 45,000 บาท (5) ค่าใช้จ่ายจ่ายล่วงหน้าเพิ่มขึ้น 5,000 บาท (6) เจ้าหนี้การค้าลดลง 12,000 บาท (7) ภาษีเงินได้ค้างจ่ายเพิ่มขึ้น 9,000 บาท จงคำนวณ",
+        rows: [
+          { label: "กำไร / (ขาดทุน) จากการขายเครื่องจักร (ใส่เครื่องหมายลบ - หากขาดทุน)", indent: false, key: "gain_loss", answer: "-8000", hint: "บาท" },
+          { label: "กระแสเงินสดสุทธิจากกิจกรรมดำเนินงาน (CFO)", indent: false, key: "cfo_adv", answer: "440000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n1. มูลค่าตามบัญชีเครื่องจักร = 100,000 - 60,000 = 40,000 บาท ขายได้ 32,000 บาท -> ขาดทุน 8,000 บาท (-8,000)\n2. CFO = กำไรสุทธิ (400,000) + ค่าเสื่อมราคา (65,000) + ขาดทุนขายเครื่องจักร (8,000) + ลูกหนี้ลดลง (20,000) - สินค้าเพิ่มขึ้น (45,000) - จ่ายล่วงหน้าเพิ่มขึ้น (5,000) - เจ้าหนี้ลดลง (12,000) + ภาษีค้างจ่ายเพิ่มขึ้น (9,000) = 440,000 บาท"
+      },
+      {
+        id: "s3q9",
+        type: "mcq",
+        topic: "บทที่ 6 (Hard): การวัดมูลค่าสินค้าคงเหลือ (Lower of Cost or NRV)",
+        text: "ณ วันสิ้นงวด สินค้าคงเหลือรุ่น X มีราคาทุน 120,000 บาท ราคาขายโดยประมาณที่คาดว่าจะขายได้ตามปกติธุรกิจคือ 130,000 บาท และมีต้นทุนที่จำเป็นต้องจ่ายเพื่อให้ขายสินค้านั้นได้อีก 18,000 บาท ตามมาตรฐานการบัญชี ฉบับที่ 2 กิจการต้องแสดงมูลค่าสินค้า X ในงบแสดงฐานะการเงินเท่าใด?",
+        options: [
+          "130,000 บาท",
+          "120,000 บาท",
+          "112,000 บาท",
+          "102,000 บาท"
+        ],
+        answer: 2,
+        explanation: "แนวคิด: ตาม TAS 2 สินค้าคงเหลือต้องวัดมูลค่าด้วย 'ราคาทุน หรือ มูลค่าสุทธิที่จะได้รับ (NRV) แล้วแต่ราคาใดจะต่ำกว่า'\n• NRV = ราคาขายโดยประมาณ (130,000) - ต้นทุนที่จำเป็นเพื่อให้ขายได้ (18,000) = 112,000 บาท\n• เปรียบเทียบ ราคาทุน (120,000) กับ NRV (112,000) -> เลือกค่าที่ต่ำกว่าคือ 112,000 บาท (รับรู้ผลขาดทุนจากการปรับลดมูลค่า 8,000 บาท)"
+      },
+      {
+        id: "s3q10",
+        type: "mcq",
+        topic: "บทที่ 7 (Hard): จุดความรับผิดทางภาษี (Tax Point) กรณีรับมัดจำค่าสินค้า",
+        text: "บริษัททำสัญญาขายสินค้าและรับเงินมัดจำค่าสินค้า 30% จากลูกค้าในวันที่ 25 มีนาคม (ออกใบรับเงินมัดจำแต่ยังไม่ออกใบกำกับภาษี) ต่อมาส่งมอบสินค้าในวันที่ 5 เมษายน และรับชำระเงินส่วนที่เหลือ 70% พร้อมออกใบกำกับภาษีเต็มจำนวนในวันที่ 10 เมษายน ความรับผิดในการเสียภาษีมูลค่าเพิ่ม (Tax Point) เกิดขึ้นเมื่อใด?",
+        options: [
+          "เกิดขึ้นทั้ง 100% ในวันที่ 5 เมษายน (วันที่ส่งมอบสินค้า)",
+          "เกิดขึ้นทั้ง 100% ในวันที่ 10 เมษายน (วันที่ออกใบกำกับภาษี)",
+          "เกิดขึ้น 30% ในวันที่ 25 มีนาคม (วันรับเงินมัดจำ) และอีก 70% ในวันที่ 5 เมษายน (วันส่งมอบสินค้า)",
+          "เกิดขึ้น 30% ในวันที่ 25 มีนาคม และอีก 70% ในวันที่ 10 เมษายน"
+        ],
+        answer: 2,
+        explanation: "แนวคิด (อ้างอิงหน้า 218 ของตำรา): สำหรับการขายสินค้า ความรับผิดเกิดเมื่อส่งมอบสินค้า เว้นแต่ผู้ขายได้รับชำระราคาสินค้าหรือออกใบกำกับภาษีก่อน ให้ถือว่าความรับผิดเกิดขึ้นตามส่วนของการกระทำนั้น ๆ ดังนั้น 30% เกิดขึ้นในวันที่ 25 มี.ค. (วันรับเงินมัดจำ) และส่วนที่เหลือ 70% เกิดขึ้นในวันที่ 5 เม.ย. (วันส่งมอบสินค้า ซึ่งเกิดก่อนวันชำระส่วนที่เหลือ 10 เม.ย.)"
+      },
+      {
+        id: "s3q11",
+        type: "fill",
+        topic: "สัปดาห์ที่ 15 (Hard): DuPont Analysis & โครงสร้างเงินทุน",
+        text: "บริษัทแห่งหนึ่งมีอัตรากำไรสุทธิ (Net Profit Margin) = 8%, อัตราการหมุนเวียนของสินทรัพย์รวม (Total Asset Turnover) = 1.5 รอบ และอัตราส่วนหนี้สินต่อส่วนของผู้ถือหุ้น (Debt-to-Equity Ratio) = 1.0 เท่า หากยอดขายสุทธิทั้งปีเท่ากับ 3,000,000 บาท จงคำนวณ",
+        rows: [
+          { label: "สินทรัพย์รวมเฉลี่ย (Total Assets)", indent: false, key: "dup_ta", answer: "2000000", hint: "บาท" },
+          { label: "ส่วนของผู้ถือหุ้นเฉลี่ย (Total Equity)", indent: false, key: "dup_eq", answer: "1000000", hint: "บาท" },
+          { label: "อัตราผลตอบแทนต่อส่วนของผู้ถือหุ้น (ROE - %)", indent: false, key: "dup_roe", answer: "24", hint: "%" }
+        ],
+        explanation: "แนวคิด:\n1. Total Asset Turnover = Sales / Total Assets -> 1.5 = 3,000,000 / TA -> TA = 2,000,000 บาท\n2. D/E = 1.0 แสดงว่า Debt = Equity และ Assets = Debt + Equity = 2 × Equity -> Equity = 2,000,000 / 2 = 1,000,000 บาท\n3. กำไรสุทธิ = 3,000,000 × 8% = 240,000 บาท -> ROE = (240,000 / 1,000,000) × 100 = 24% (หรือ DuPont: 8% × 1.5 × 2.0 = 24%)"
+      },
+      {
+        id: "s3q12",
+        type: "mcq",
+        topic: "สัปดาห์ที่ 14 (Hard): Under-applied / Over-applied MOH",
+        text: "โรงงานคิดค่าใช้จ่ายในการผลิตเข้างาน (Applied MOH) ในอัตรา 150 บาทต่อชั่วโมงแรงงานทางตรง ปีนี้มีชั่วโมงแรงงานทางตรงเกิดขึ้นจริง 2,000 ชั่วโมง และมีค่าใช้จ่ายในการผลิตที่เกิดขึ้นจริง (Actual MOH) 315,000 บาท เมื่อปิดผลต่างเข้าบัญชีต้นทุนขายจะส่งผลอย่างไร?",
+        options: [
+          "คิดค่าใช้จ่ายการผลิตเข้างานสูงไป (Over-applied) 15,000 บาท ทำให้ต้นทุนขายลดลง 15,000 บาท",
+          "คิดค่าใช้จ่ายการผลิตเข้างานต่ำไป (Under-applied) 15,000 บาท ทำให้ต้นทุนขายเพิ่มขึ้น 15,000 บาท",
+          "คิดค่าใช้จ่ายการผลิตเข้างานต่ำไป (Under-applied) 15,000 บาท ทำให้กำไรสุทธิเพิ่มขึ้น 15,000 บาท",
+          "ไม่มีผลต่างเกิดขึ้น"
+        ],
+        answer: 1,
+        explanation: "แนวคิด:\n• Applied MOH = 150 × 2,000 = 300,000 บาท\n• Actual MOH = 315,000 บาท\n• คิดเข้างานต่ำกว่าที่เกิดขึ้นจริง (Under-applied) = 315,000 - 300,000 = 15,000 บาท เมื่อปิดผลต่างต้องเดบิตต้นทุนขายเพิ่มอีก 15,000 บาท"
+      },
+      {
+        id: "s3q13",
+        type: "fill",
+        topic: "บทที่ 6 (Hard): ผลกระทบข้อผิดพลาดสินค้าคงเหลือข้ามงวด",
+        text: "ปี 25x1 กิจการตรวจนับสินค้าคงเหลือปลายงวด 'สูงไป (Overstated) 15,000 บาท' และปี 25x2 ตรวจนับสินค้าคงเหลือปลายงวด 'ต่ำไป (Understated) 10,000 บาท' (สมมติไม่มีข้อผิดพลาดอื่น) จงระบุผลกระทบต่อ 'กำไรสุทธิ' ของแต่ละปี (ใส่เครื่องหมาย + ถ้าสูงไป หรือ - ถ้าต่ำไป เช่น +15000 หรือ -25000)",
+        rows: [
+          { label: "ผลกระทบต่อกำไรสุทธิปี 25x1 (สูงไป + / ต่ำไป -)", indent: false, key: "err_x1", answer: "+15000", hint: "บาท" },
+          { label: "ผลกระทบต่อกำไรสุทธิปี 25x2 (สูงไป + / ต่ำไป -)", indent: false, key: "err_x2", answer: "-25000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด:\n• ปี 25x1: สินค้าปลายงวดสูงไป 15,000 -> ต้นทุนขายต่ำไป 15,000 -> กำไรสุทธิสูงไป +15,000 บาท\n• ปี 25x2: สินค้าปลายงวด 25x1 ยกมาเป็นสินค้าต้นงวด 25x2 สูงไป 15,000 (ทำให้ COGS สูงไป 15,000 -> กำไรต่ำไป 15,000) บวกกับสินค้าปลายงวด 25x2 ต่ำไปอีก 10,000 (ทำให้ COGS สูงไปอีก 10,000 -> กำไรต่ำไปอีก 10,000) รวมปี 25x2 กำไรสุทธิต่ำไป -25,000 บาท"
+      },
+      {
+        id: "s3q14",
+        type: "mcq",
+        topic: "บทที่ 7 (Hard): การยื่นแบบ ภ.พ. 36 กรณีจ่ายค่าบริการต่างประเทศ",
+        text: "บริษัทจดทะเบียน VAT ในไทย จ่ายค่าโฆษณาออนไลน์ (แพลตฟอร์มต่างประเทศที่ไม่ได้จดทะเบียน VAT ในไทย) เป็นเงิน 50,000 บาท บริษัทต้องปฏิบัติทางภาษีมูลค่าเพิ่มอย่างไร?",
+        options: [
+          "ได้รับยกเว้น VAT ไม่ต้องยื่นแบบใด ๆ",
+          "ยื่นแบบ ภ.พ. 36 นำส่ง VAT 7% (3,500 บาท) ภายใน 7 วันนับแต่วันสิ้นเดือนที่จ่ายเงิน และนำใบเสร็จกรมสรรพากรมาใช้เป็นภาษีซื้อได้",
+          "ยื่นแบบ ภ.พ. 30 ภายในวันที่ 15 ของเดือนถัดไป และห้ามนำมาใช้เป็นภาษีซื้อ",
+          "หักภาษีมูลค่าเพิ่ม 7% ไว้กับบริษัทโดยไม่ต้องนำส่งกรมสรรพากร"
+        ],
+        answer: 1,
+        explanation: "แนวคิด (อ้างอิงหน้า 241 & 248 ของตำรา): กรณีจ่ายเงินค่าบริการให้ผู้ประกอบการในต่างประเทศที่ได้มีการใช้บริการนั้นในราชอาณาจักร ผู้จ่ายเงินมีหน้าที่ยื่นแบบ ภ.พ. 36 นำส่ง VAT ภายใน 7 วันนับแต่วันสิ้นเดือนของเดือนที่จ่ายเงิน และใบเสร็จรับเงินของกรมสรรพากรจากแบบ ภ.พ. 36 สามารถนำมาใช้เป็นภาษีซื้อในเดือนที่ชำระภาษีได้"
+      },
+      {
+        id: "s3q15",
+        type: "fill",
+        topic: "บทที่ 6 (Hard): งบกำไรขาดทุนเบ็ดเสร็จแบบหลายขั้น",
+        text: "กิจการซื้อขายสินค้ามีข้อมูลสิ้นปี: ขาย 1,200,000 บาท, สินค้ารับคืน 30,000 บาท, ส่วนลดจ่าย 20,000 บาท, ต้นทุนขาย 700,000 บาท, ค่าขนส่งเมื่อขาย 15,000 บาท, เงินเดือนฝ่ายขาย 110,000 บาท, ค่าเสื่อมราคาอุปกรณ์สำนักงาน 45,000 บาท, เงินเดือนฝ่ายบริหาร 90,000 บาท, ดอกเบี้ยรับ 12,000 บาท และดอกเบี้ยจ่าย 22,000 บาท จงคำนวณ",
+        rows: [
+          { label: "กำไรขั้นต้น (Gross Profit)", indent: false, key: "ms_gp", answer: "450000", hint: "บาท" },
+          { label: "กำไรจากการดำเนินงาน (Operating Profit)", indent: false, key: "ms_op", answer: "190000", hint: "บาท" },
+          { label: "กำไรสุทธิ (Net Income)", indent: false, key: "ms_ni", answer: "180000", hint: "บาท" }
+        ],
+        explanation: "แนวคิด (อ้างอิงรูปแบบงบหน้า 181):\n• รายได้ค่าขายสุทธิ = 1,200,000 - 30,000 - 20,000 = 1,150,000 บาท\n• กำไรขั้นต้น = 1,150,000 - 700,000 = 450,000 บาท\n• ค่าใช้จ่ายในการดำเนินงาน = ค่าใช้จ่ายในการขาย (15,000 + 110,000 = 125,000) + ค่าใช้จ่ายในการบริหาร (45,000 + 90,000 = 135,000) = 260,000 บาท\n• กำไรจากการดำเนินงาน = 450,000 - 260,000 = 190,000 บาท\n• กำไรสุทธิ = 190,000 + ดอกเบี้ยรับ (12,000) - ดอกเบี้ยจ่าย (22,000) = 180,000 บาท"
+      }
+    ]
+  }
+];
+
+// Application State
+let currentSet = null;
+let userAnswers = {}; // { qId: number (for mcq) | { key: string } (for fill) }
+let timerInterval = null;
+let elapsedSeconds = 0;
+let reviewResults = [];
+
+// DOM Elements
+const viewSelect = document.getElementById("viewSelect");
+const viewExam = document.getElementById("viewExam");
+const viewReview = document.getElementById("viewReview");
+const examHud = document.getElementById("examHud");
+const setsGrid = document.getElementById("setsGrid");
+const prestartPanel = document.getElementById("prestartPanel");
+
+// Initialize Set Cards
+function renderSetCards() {
+  setsGrid.innerHTML = "";
+  EXAM_SETS.forEach(set => {
+    const totalPoints = set.questions.reduce((acc, q) => acc + (q.type === "mcq" ? 1 : q.rows.length), 0);
+    const card = document.createElement("div");
+    card.className = `card set-card ${set.hard ? "hard-set" : ""}`;
+    card.dataset.setId = set.id;
+    card.innerHTML = `
+      <div>
+        <span class="difficulty-badge ${set.badgeClass}">${set.level}</span>
+        <h3>${set.title}</h3>
+        <ul class="set-topics">
+          ${set.topics.map(t => `<li>${t}</li>`).join("")}
+        </ul>
+      </div>
+      <div class="set-meta">
+        <span>จำนวน ${set.questions.length} ข้อใหญ่</span>
+        <span>รวม ${totalPoints} จุดคำตอบ</span>
+      </div>
+    `;
+    card.addEventListener("click", () => selectSet(set.id));
+    setsGrid.appendChild(card);
+  });
+}
+
+function selectSet(setId) {
+  currentSet = EXAM_SETS.find(s => s.id === setId);
+  document.querySelectorAll(".set-card").forEach(el => {
+    el.classList.toggle("selected", Number(el.dataset.setId) === setId);
+  });
+  document.getElementById("selectedSetTitle").textContent = currentSet.title;
+  document.getElementById("selectedSetDesc").textContent = currentSet.description;
+  prestartPanel.classList.remove("hidden");
+  prestartPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+// Timer Formatting
+function formatTime(sec) {
+  const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+  const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+  const s = String(sec % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+}
+
+function startTimer() {
+  stopTimer();
+  elapsedSeconds = 0;
+  document.getElementById("timerDisplay").textContent = "00:00:00";
+  timerInterval = setInterval(() => {
+    elapsedSeconds++;
+    document.getElementById("timerDisplay").textContent = formatTime(elapsedSeconds);
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+// Start Exam
+document.getElementById("btnStartExam").addEventListener("click", () => {
+  if (!currentSet) return;
+  userAnswers = {};
+  viewSelect.classList.add("hidden");
+  viewReview.classList.add("hidden");
+  viewExam.classList.remove("hidden");
+  examHud.classList.remove("hidden");
+  document.getElementById("hudSetName").textContent = `ชุดที่ ${currentSet.id}`;
+  renderExamQuestions();
+  updateProgressHUD();
+  startTimer();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+function isQuestionAnswered(q) {
+  const ans = userAnswers[q.id];
+  if (q.type === "mcq") {
+    return typeof ans === "number";
+  } else {
+    if (!ans) return false;
+    return q.rows.every(r => ans[r.key] && ans[r.key].trim() !== "");
+  }
+}
+
+function updateProgressHUD() {
+  const total = currentSet.questions.length;
+  const answered = currentSet.questions.filter(isQuestionAnswered).length;
+  document.getElementById("hudProgress").textContent = `${answered}/${total}`;
+  document.getElementById("submitSummaryHint").textContent =
+    answered === total
+      ? `นายท่านทำครบทั้ง ${total} ข้อเรียบร้อยแล้ว พร้อมส่งคำตอบค่ะ`
+      : `นายท่านทำไปแล้ว ${answered} จาก ${total} ข้อ (ยังเหลืออีก ${total - answered} ข้อที่ยังตอบไม่ครบ)`;
+
+  currentSet.questions.forEach((q, idx) => {
+    const dot = document.getElementById(`nav-dot-${idx}`);
+    if (dot) dot.classList.toggle("answered", isQuestionAnswered(q));
+  });
+}
+
+function renderExamQuestions() {
+  const nav = document.getElementById("questionNavigator");
+  const container = document.getElementById("questionsContainer");
+  nav.innerHTML = "";
+  container.innerHTML = "";
+
+  const thLetters = ["ก.", "ข.", "ค.", "ง."];
+
+  currentSet.questions.forEach((q, idx) => {
+    // Navigator dot
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.id = `nav-dot-${idx}`;
+    dot.className = "nav-dot";
+    dot.textContent = idx + 1;
+    dot.addEventListener("click", () => {
+      document.getElementById(`q-card-${idx}`).scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+    nav.appendChild(dot);
+
+    // Question card
+    const card = document.createElement("div");
+    card.id = `q-card-${idx}`;
+    card.className = "card question-card";
+
+    let bodyHtml = "";
+    if (q.type === "mcq") {
+      bodyHtml = `<div class="options-list">
+        ${q.options.map((opt, optIdx) => `
+          <label class="option-label" id="lbl-${q.id}-${optIdx}">
+            <input type="radio" name="q_${q.id}" value="${optIdx}" />
+            <span><strong>${thLetters[optIdx]}</strong> ${opt}</span>
+          </label>
+        `).join("")}
+      </div>`;
+    } else {
+      bodyHtml = `<div class="acc-table-wrap">
+        <table class="acc-table">
+          <thead>
+            <tr>
+              <th>รายการ / รายละเอียดทางบัญชี</th>
+              <th class="num-col">จำนวนเงิน / คำตอบ</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${q.rows.map(r => `
+              <tr>
+                <td class="${r.indent ? "indent-cr" : ""}">${r.label}</td>
+                <td class="num-col">
+                  <input type="text" class="blank-input" data-qid="${q.id}" data-key="${r.key}" placeholder="เติมตัวเลข (${r.hint})" autocomplete="off" />
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-number">ข้อที่ ${idx + 1} ${q.type === "fill" ? "(เติมตัวเลขทางบัญชี)" : "(4 ตัวเลือก)"}</span>
+        <span class="q-tag">${q.topic}</span>
+      </div>
+      <div class="q-text">${q.text}</div>
+      ${bodyHtml}
+    `;
+    container.appendChild(card);
+
+    // Bind events
+    if (q.type === "mcq") {
+      card.querySelectorAll(`input[name="q_${q.id}"]`).forEach(radio => {
+        radio.addEventListener("change", (e) => {
+          const val = Number(e.target.value);
+          userAnswers[q.id] = val;
+          card.querySelectorAll(".option-label").forEach((lbl, i) => {
+            lbl.classList.toggle("chosen", i === val);
+          });
+          updateProgressHUD();
+        });
+      });
+    } else {
+      card.querySelectorAll(".blank-input").forEach(inp => {
+        inp.addEventListener("input", (e) => {
+          if (!userAnswers[q.id]) userAnswers[q.id] = {};
+          userAnswers[q.id][e.target.dataset.key] = e.target.value;
+          updateProgressHUD();
+        });
+      });
+    }
+  });
+}
+
+// Smart Numeric & String Answer Checker
+function checkBlankValue(userRaw, expectedRaw) {
+  const normalize = s => String(s || "").trim().replace(/,/g, "").replace(/\s+/g, "");
+  const u = normalize(userRaw);
+  const e = normalize(expectedRaw);
+  if (u === "") return false;
+  const uNum = Number(u);
+  const eNum = Number(e);
+  if (!Number.isNaN(uNum) && !Number.isNaN(eNum)) {
+    return Math.abs(uNum - eNum) < 0.015;
+  }
+  return u.toLowerCase() === e.toLowerCase();
+}
+
+function formatNumberDisplay(val) {
+  const clean = String(val).replace(/,/g, "");
+  const num = Number(clean);
+  if (Number.isNaN(num)) return val;
+  const prefix = String(val).trim().startsWith("+") && num > 0 ? "+" : "";
+  if (String(val).includes(".")) {
+    return prefix + num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  return prefix + num.toLocaleString("en-US");
+}
+
+// Submit & Grade Exam
+document.getElementById("btnSubmitExam").addEventListener("click", () => {
+  const totalQ = currentSet.questions.length;
+  const answeredQ = currentSet.questions.filter(isQuestionAnswered).length;
+  if (answeredQ < totalQ) {
+    const ok = confirm(`นายท่านยังทำข้อสอบไม่ครบ (ทำแล้ว ${answeredQ}/${totalQ} ข้อ) ต้องการส่งคำตอบและดูเฉลยเลยหรือไม่คะ?`);
+    if (!ok) return;
+  }
+
+  stopTimer();
+  gradeExam();
+  viewExam.classList.add("hidden");
+  examHud.classList.add("hidden");
+  viewReview.classList.remove("hidden");
+  renderReviewList("all");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+function gradeExam() {
+  let earnedPoints = 0;
+  let totalPoints = 0;
+  let qPassedCount = 0;
+
+  reviewResults = currentSet.questions.map((q, idx) => {
+    if (q.type === "mcq") {
+      totalPoints += 1;
+      const chosen = userAnswers[q.id];
+      const isCorrect = chosen === q.answer;
+      if (isCorrect) {
+        earnedPoints += 1;
+        qPassedCount += 1;
+      }
+      return { q, idx, isCorrect, chosen };
+    } else {
+      const ansObj = userAnswers[q.id] || {};
+      let allRowsCorrect = true;
+      const rowDetails = q.rows.map(r => {
+        totalPoints += 1;
+        const uVal = ansObj[r.key] || "";
+        const ok = checkBlankValue(uVal, r.answer);
+        if (ok) earnedPoints += 1;
+        else allRowsCorrect = false;
+        return { ...r, userVal: uVal, ok };
+      });
+      if (allRowsCorrect) qPassedCount += 1;
+      return { q, idx, isCorrect: allRowsCorrect, rowDetails };
+    }
+  });
+
+  const percent = totalPoints > 0 ? ((earnedPoints / totalPoints) * 100).toFixed(1) : "0.0";
+  const wrongQCount = currentSet.questions.length - qPassedCount;
+
+  document.getElementById("resScore").textContent = `${earnedPoints} / ${totalPoints}`;
+  document.getElementById("resPercent").textContent = `${percent}%`;
+  document.getElementById("resQPass").textContent = `${qPassedCount} / ${currentSet.questions.length} ข้อ`;
+  document.getElementById("resTime").textContent = formatTime(elapsedSeconds);
+
+  document.getElementById("cntAll").textContent = currentSet.questions.length;
+  document.getElementById("cntWrong").textContent = wrongQCount;
+  document.getElementById("cntCorrect").textContent = qPassedCount;
+}
+
+function renderReviewList(filterMode) {
+  const container = document.getElementById("reviewContainer");
+  container.innerHTML = "";
+  const thLetters = ["ก.", "ข.", "ค.", "ง."];
+
+  const filtered = reviewResults.filter(item => {
+    if (filterMode === "wrong") return !item.isCorrect;
+    if (filterMode === "correct") return item.isCorrect;
+    return true;
+  });
+
+  document.getElementById("filterStatusText").textContent = `กำลังแสดง ${filtered.length} ข้อ`;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="card" style="text-align: center; padding: 2.5rem;">
+        <h3 style="margin: 0 0 0.5rem; color: var(--success);">
+          ${filterMode === "wrong" ? "ยอดเยี่ยมมากค่ะ นายท่าน! ไม่มีข้อที่ทำผิดเลย 🎉" : "ไม่พบรายการในตัวกรองนี้"}
+        </h3>
+        <p style="margin: 0; color: var(--text-muted);">สามารถกดปุ่ม "แสดงทุกข้อ" เพื่อทบทวนแนวคิดทั้งหมดได้นะคะ</p>
+      </div>
+    `;
+    return;
+  }
+
+  filtered.forEach(item => {
+    const { q, idx, isCorrect } = item;
+    const card = document.createElement("div");
+    card.className = `card question-card ${isCorrect ? "q-correct-card" : "q-wrong-card"}`;
+
+    let bodyHtml = "";
+    if (q.type === "mcq") {
+      bodyHtml = `<div class="options-list">
+        ${q.options.map((opt, optIdx) => {
+          let cls = "option-label";
+          let marker = "";
+          if (optIdx === q.answer) {
+            cls += " opt-review-correct";
+            marker = " ✔ (คำตอบที่ถูกต้อง)";
+          } else if (optIdx === item.chosen && optIdx !== q.answer) {
+            cls += " opt-review-wrong";
+            marker = " ✖ (คำตอบที่นายท่านเลือก)";
+          }
+          return `
+            <div class="${cls}" style="cursor: default;">
+              <span><strong>${thLetters[optIdx]}</strong> ${opt}<strong>${marker}</strong></span>
+            </div>
+          `;
+        }).join("")}
+        ${typeof item.chosen !== "number" ? `<div style="color: var(--danger); font-weight: 600; font-size: 0.9rem;">*ไม่ได้เลือกคำตอบในข้อนี้</div>` : ""}
+      </div>`;
+    } else {
+      bodyHtml = `<div class="acc-table-wrap">
+        <table class="acc-table">
+          <thead>
+            <tr>
+              <th>รายการ / รายละเอียดทางบัญชี</th>
+              <th class="num-col">คำตอบของนายท่าน / เฉลย</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${item.rowDetails.map(r => `
+              <tr>
+                <td class="${r.indent ? "indent-cr" : ""}">${r.label}</td>
+                <td class="num-col">
+                  <div class="blank-review-box">
+                    ${r.ok
+                      ? `<span class="ans-user-ok">✔ ${formatNumberDisplay(r.userVal)} ${r.hint}</span>`
+                      : `<span class="ans-user-bad">${r.userVal ? formatNumberDisplay(r.userVal) : "(ไม่ได้ตอบ)"}</span>
+                         <span class="ans-expected">เฉลย: ${formatNumberDisplay(r.answer)} ${r.hint}</span>`
+                    }
+                  </div>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>`;
+    }
+
+    card.innerHTML = `
+      <div class="q-header">
+        <div>
+          <span class="q-number">ข้อที่ ${idx + 1}</span>
+          <span class="status-pill ${isCorrect ? "pill-pass" : "pill-fail"}" style="margin-left: 0.5rem;">
+            ${isCorrect ? "✔ ถูกต้อง" : "✖ ผิด / ไม่สมบูรณ์"}
+          </span>
+        </div>
+        <span class="q-tag">${q.topic}</span>
+      </div>
+      <div class="q-text">${q.text}</div>
+      ${bodyHtml}
+      <div class="explanation-box">
+        <div class="explanation-title">💡 เฉลยละเอียดและแนวคิด</div>
+        <div style="white-space: pre-line;">${q.explanation}</div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+// Filter Buttons
+document.querySelectorAll(".filter-group .btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-group .btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderReviewList(btn.dataset.filter);
+  });
+});
+
+// Navigation Actions
+document.getElementById("btnCancelExam").addEventListener("click", () => {
+  if (confirm("ต้องการยกเลิกการทำข้อสอบชุดนี้และกลับหน้าเลือกชุดใช่หรือไม่คะ?")) {
+    stopTimer();
+    viewExam.classList.add("hidden");
+    examHud.classList.add("hidden");
+    viewSelect.classList.remove("hidden");
+  }
+});
+
+document.getElementById("btnBackHome").addEventListener("click", () => {
+  viewReview.classList.add("hidden");
+  viewSelect.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("btnRetrySet").addEventListener("click", () => {
+  document.getElementById("btnStartExam").click();
+});
+
+// Boot
+renderSetCards();
+</script>
+</body>
+</html>
